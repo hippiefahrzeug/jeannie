@@ -1,0 +1,36 @@
+
+{
+  "name": "lifelog",
+  "description": "the livelog database",
+  "tables": [
+    {
+      "name": "user",
+      "columns": [
+        {
+          "type": "DECIMAL",
+          "size": 99,
+          "primary": true,
+          "required": true,
+          "description": "id of the user",
+          "name": "id"
+        },
+        {
+          "type": "VARCHAR",
+          "size": 20,
+          "primary": false,
+          "required": false,
+          "description": "name of the user",
+          "name": "name"
+        },
+        {
+          "type": "VARCHAR",
+          "size": 20,
+          "primary": false,
+          "required": false,
+          "description": "firstname of the user",
+          "name": "firstname"
+        }
+      ]
+    }
+  ]
+}

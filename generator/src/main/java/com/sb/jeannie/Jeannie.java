@@ -99,15 +99,15 @@ public class Jeannie {
 	 * never stops and calls generator whenever it detects a change.
 	 */
 	public static void looper() {
-		Jeannie genie = new Jeannie(
+		Jeannie jeannie = new Jeannie(
 				"",
 				"",
 				""
 		);
 		
-		Module module = genie.getModule();
+		Module module = jeannie.getModule();
 		ChangeChecker modulefiles = new ChangeChecker(module.getModule());
-		ChangeChecker inputfiles = new ChangeChecker(genie.getInputlocation());
+		ChangeChecker inputfiles = new ChangeChecker(jeannie.getInputlocation());
 		inputfiles.hasChangedFiles(); // don't parse first time
 		int n = 0;
 		do {
@@ -115,15 +115,15 @@ public class Jeannie {
 				// don't do this all the time...
 				if (n % 4 == 0) {
 					modulefiles = detectChanges(module.getModule(), modulefiles);
-					inputfiles = detectChanges(genie.getInputlocation(), inputfiles);
+					inputfiles = detectChanges(jeannie.getInputlocation(), inputfiles);
 				}
 				
 				if (inputfiles.hasChangedFiles()) {
-					genie.handleParsers();
-					genie.generate();
+					jeannie.handleParsers();
+					jeannie.generate();
 				}
 				if (modulefiles.hasChangedFiles()) {
-					genie.generate();
+					jeannie.generate();
 				}
 				Thread.sleep(500);
 			}

@@ -1,0 +1,103 @@
+properties ::= [
+	"type" : "yaml",
+	"postprocessor" : "JavaPostprocessor"
+]
+
+db2java ::= [
+        "varchar":"String",
+	"decimal":"Integer"
+]
+
+main() ::= <<
+/**
+ * <context.current.description>
+ */
+<class()>
+
+>>
+
+class() ::= <<
+
+package com.sb.persistence.entities;
+
+public class <context.Preprocess.javaClassName; format="uc"> {
+    <context.current.columns:declaration(context.current.columns); separator="\n">
+
+    <constructor()>
+    <context.current.columns:anchor(context.current.columns)>
+    <builder()>
+}
+
+>>
+
+constructor() ::= <<
+
+private <context.Preprocess.javaClassName; format="uc">() {}
+
+>>
+
+construtorArgs(column, columns) ::= "private <db2java.(columns.(column).type)> <column>"
+
+declaration(column, columns) ::= "private <db2java.(columns.(column).type)> <column>;"
+
+anchor(column, columns) ::= <<
+
+/**
+ * <columns.(column).description>
+ */
+public <db2java.(columns.(column).type)> get<column; format="uc">() {
+    return <column>;
+}
+
+public void set<first(column); format="uc">(<db2java.(columns.(column).type)> <column>) {
+    <assignment(column)>
+}
+
+>>
+
+assignment(column) ::= "this.<first(column)> = <first(column)>;"
+builderAssignment(column) ::= "<first(column)> = builder.<first(column)>;"
+
+builder() ::= <<
+// ========================================
+// builder
+// ========================================
+public class Builder {
+    <context.current.columns:declaration(context.current.columns); separator="\n">
+
+    <context.current.columns:issetdefs(context.current.columns); separator="\n">
+    <context.current.columns:buildermethods(context.current.columns)>
+    <build()>
+}
+>>
+
+build() ::= <<
+public static <context.Preprocess.javaClassName; format="uc"> build() {
+    <context.Preprocess.javaClassName; format="uc"> bean = new <context.Preprocess.javaClassName; format="uc">();
+
+    <context.current.columns:buildHelper()>
+    return bean;
+}
+>>
+
+buildHelper(column) ::= <<
+
+if (isSet<column; format="uc">) {
+    bean.set<column; format="uc">(<column; format="uc">);
+}
+
+>>
+
+issetdefs(column, columns) ::= "private boolean isSet<column; format=\"uc\"> = false;"
+
+buildermethods(column, columns) ::= <<
+
+
+public <context.Preprocess.javaClassName; format="uc"> <column>(<db2java.(columns.(column).type)> <column>) {
+    this.<column> = <column>;
+    isSet<column; format="uc"> = true;
+    return this;
+}
+
+>>
+
