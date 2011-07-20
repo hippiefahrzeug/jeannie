@@ -1,0 +1,45 @@
+
+
+com.sb.jeannie.ParserScanner ps = new com.sb.jeannie.ParserScanner();
+ps.scan();
+
+com.sb.jeannie.Jeannie.geng();
+
+
+
+com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie();
+genie.init();
+genie.generate();
+
+com.sb.jeannie.ParserScanner ps = new com.sb.jeannie.ParserScanner();
+ps.prepareScanner();
+
+org.stringtemplate.v4.ST st = new org.stringtemplate.v4.ST(com.sb.jeannie.Utils.loadFileAsString(new java.io.File("/home/alvi/projects/lifelog/lifelog-common/src/main/genie/module/templates/testes.st")),'$', '$');
+st.add("currentfile", "huhu");
+System.out.println(st.render());
+
+com.sb.jeannie.HammaYaml.testes2();
+
+
+com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie();
+genie.looper();
+
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:165)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:174)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:192)
+	at org.eclipse.jdi.internal.ObjectReferenceImpl.invokeMethod(ObjectReferenceImpl.java:395)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread.invokeMethod(JDIThread.java:847)
+	at org.eclipse.jdt.internal.debug.core.model.JDIObjectValue.sendMessage(JDIObjectValue.java:85)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine.run(LocalEvaluationEngine.java:230)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread.runEvaluation(JDIThread.java:681)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine.acceptClassFiles(LocalEvaluationEngine.java:217)
+	at org.eclipse.jdt.internal.core.eval.RequestorWrapper.acceptClassFiles(RequestorWrapper.java:48)
+	at org.eclipse.jdt.internal.eval.EvaluationContext.evaluate(EvaluationContext.java:289)
+	at org.eclipse.jdt.internal.eval.EvaluationContext.evaluate(EvaluationContext.java:308)
+	at org.eclipse.jdt.internal.core.eval.EvaluationContextWrapper.evaluateCodeSnippet(EvaluationContextWrapper.java:244)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine$1.run(LocalEvaluationEngine.java:428)
+	at java.lang.Thread.run(Thread.java:679)
+
+System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage().getName());

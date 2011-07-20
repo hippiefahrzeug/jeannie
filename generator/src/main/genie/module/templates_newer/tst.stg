@@ -1,0 +1,6 @@
+group genie;
+
+func ::= <<
+    - $it.name$
+>>
+
