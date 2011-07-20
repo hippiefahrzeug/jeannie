@@ -3,7 +3,7 @@ jeannie - a general purpose generator for the rest of us
 
 * Author:    alvi
 * Date:      June, 2011
-* Version:   0.1
+* Version:   0.1 - not released yet
 * Website:   <http://softbork.com/jeannie>
 * GitHub:    <https://github.com/hippiefahrzeug/jeannie>
 
@@ -40,4 +40,4 @@ jeannie is optimized for reuse of a generator. It has a very simple concept: Eve
 
 You'll basically create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module.
 
-
+5
