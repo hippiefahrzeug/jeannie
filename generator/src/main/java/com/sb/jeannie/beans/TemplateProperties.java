@@ -2,9 +2,7 @@ package com.sb.jeannie.beans;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
 /**
@@ -29,16 +27,13 @@ import org.stringtemplate.v4.STGroup;
  * 
  * @author alvi
  */
-public class TemplateProperties {
+public class TemplateProperties extends BeanSupport {
 	private static final String EXTENSION = "extension";
 	private static final String TYPE = "type";
 	private static final String OUTPUTNAME = "outputname";
 	private static final String OUTPUTDIR = "outputdir";
 	private static final String POSTPROCESSOR = "postprocessor";
 	private static final String DONTGENERATE = "dontgenerate";
-
-	private static Map<String, String> PROPERTY_MAP;
-	private static Map<String, String> props;
 
 	static {
 		PROPERTY_MAP = new HashMap<String, String>();
@@ -52,42 +47,10 @@ public class TemplateProperties {
 	
 	public TemplateProperties(STGroup stg, Map<String, Object> properties) {
 		props = new HashMap<String, String>();
-		handleTemplates(stg);
-		handleProperties(properties);
+		handleTemplates(PROPERTY_MAP, stg);
+		handleProperties(PROPERTY_MAP, properties);
 	}
 
-	/**
-	 * takes a map of properties and uses the ones we're interested
-	 * in and makes those available through getters.
-	 */
-	public void handleProperties(Map<String, Object> properties) {
-		Set<String> keys = properties.keySet();
-		for (String key : keys) {
-			if (PROPERTY_MAP.containsKey(key)) {
-				String val = (String)properties.get(key);
-				props.put(key, val);
-			}
-		}
-	}
-	
-	/**
-	 * queries the template group for a set of templates and 
-	 * renders those available. These templates's values will then
-	 * replace the property value. The key is the template name.
-	 * 
-	 * @param stg
-	 */
-	public void handleTemplates(STGroup stg) {
-		Set<String> keys = PROPERTY_MAP.keySet();
-		for (String key : keys) {
-			ST st = stg.getInstanceOf(key);
-			if (st != null) {
-				String val = st.render();
-				props.put(key, val);
-			}
-		}
-	}
-	
 	public String getPostprocessor() {
 		return props.get(POSTPROCESSOR);
 	}

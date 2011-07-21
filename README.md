@@ -26,19 +26,20 @@ If the last two points doesn't make any sense, that's ok. You just need to know 
 Some words about generators
 ---------------------------
 
-There is an absolute need for code generation, no doubt about it. Whenever you're looking for a general purpose generator, you will find huge frameworks/software platforms, and they will all occupy you for hours if not days to get a 'hello world' generated. These tools often have their purpose, for instance as an MDA tool where this kind of complexity is... reassuring. However, if you just want to generate some smaller things, the effort is noever justified to use these tools, as they are slow, big, complicated and usually no fun.
+There is an absolute need for code generation, no doubt about it. Whenever you're looking for a general purpose generator, you will find huge frameworks/software platforms/systems/etc. and they will all occupy you for many hours if not days to get a 'hello world' generated. These tools often have their purpose, for instance as an MDA tool where this kind of complexity is... reassuring. However, if you want to generate some smaller things, the effort is almost never justified to use these tools, as they are slow, big, complicated and usually no fun.
 
-Because of this reason, most developers end up creating their own ad-hoc generators. They get the job done, but the problem is that such generators are often not reusable (or hard to reuse).
+Because of this reason, you probably ended up creating your own ad-hoc generators in the past, right? They get the job done, but the problem is that such generators are often not reusable (or hard to reuse), not maintainable and only understandable by you.
 
-jeannie is optimized for reuse of a generator. It has a very simple concept: Everything you need to generate is contained within a module. A module is a well defined collection of files. Here's how a module is organized.
+jeannie is optimized to address these problems and helps greatly in reusing your generators. It has a very simple concept: Everything that defines how something is generated is contained within a module. A module is a well defined collection of files:
 
-    module/
-        scriptlets/
-        templates/
-        BANNER
-        README
+    module/             - can be named authing
+        scriptlets/     - contains your groovy scripts (optional)
+        templates/      - contains the templates
+        BANNER          - this is printed out whenever this generator runs
+        README          - documentation about the module
 
-You'll basically create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module.
+You'll basically create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be versioned and retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module.
+
 
 currently working on
 --------------------

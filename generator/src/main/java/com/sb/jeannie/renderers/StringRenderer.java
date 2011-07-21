@@ -15,6 +15,11 @@ public class StringRenderer implements AttributeRenderer {
 			String res = t.substring(0, 1).toUpperCase() + t.substring(1);
 			return res;
 		}
+		if (formatString.equals("toUpperCase")) {
+			String t = o.toString();
+			String res = t.toUpperCase();
+			return res;
+		}
 		return o.toString();
 	}
 

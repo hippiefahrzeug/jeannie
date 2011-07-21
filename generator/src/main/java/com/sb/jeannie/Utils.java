@@ -13,11 +13,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sb.jeannie.beans.JeannieProperties;
+
 public class Utils {
     private final static Logger LOG = LoggerFactory.getLogger(Utils.class);
     public static Charset ENCODING;
     public static String NL = System.getProperty("line.separator");
-    public static String DEFAULTCHARSET = "ISO-8859-1";
+    public static String DEFAULTCHARSET = JeannieProperties.getGlobalEncoding();
     
     public static final String PROPERTY_ENCODING = "encoding";
 

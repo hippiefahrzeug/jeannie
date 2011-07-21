@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sb.jeannie.annotations.Parser;
+import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.utils.TimeTaker;
 
 public abstract class ParserSupport {
@@ -44,6 +45,10 @@ public abstract class ParserSupport {
     public void addFile(File file) {
     	totalFiles++;
     	String name = file.getName();
+    	String types = JeannieProperties.getGlobalTypes();
+    	if (!(types.contains(type) || types.equals("all"))) {
+    		return;
+    	}
     	
     	// default behavior: always add the file!
     	if (extensions.size() == 0) {

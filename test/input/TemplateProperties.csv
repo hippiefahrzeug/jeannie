@@ -1,0 +1,6 @@
+extension,     extension of a file
+type,          type of the parser of the current object
+outputname,    name of the generated file
+outputdir,     directory of the generated file
+postprocessor, desired post processor(s)
+dontgenerate,  set to true if file shouldn't be written

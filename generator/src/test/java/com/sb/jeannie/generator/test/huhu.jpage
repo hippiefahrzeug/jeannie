@@ -1,0 +1,8 @@
+
+
+
+com.sb.jeannie.generator.test.JeannieTest t = new com.sb.jeannie.generator.test.JeannieTest();
+t.testGenerator();
+ 
+System.out.println(com.sb.jeannie.generator.test.JeannieTest.testcases[0][0]);
+System.out.println(com.sb.jeannie.generator.test.JeannieTest.testcases[0][1]);

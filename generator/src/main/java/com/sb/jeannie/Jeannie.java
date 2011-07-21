@@ -28,6 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sb.jeannie.beans.Index;
 import com.sb.jeannie.beans.Info;
+import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.beans.Module;
 import com.sb.jeannie.beans.TemplateProperties;
 import com.sb.jeannie.interfaces.Postprocessor;
@@ -38,6 +39,17 @@ import com.sb.jeannie.processors.DefaultPostprocessor;
 import com.sb.jeannie.renderers.StringRenderer;
 import com.sb.jeannie.utils.TimeTaker;
 
+/**
+ * entry class for generation. Look no further.
+ * 
+ * - init() can be called to reset the generator.
+ * - generate() can be called repeatedly
+ * - looper() remains in a loop of calling generate()
+ *   whenever any files have changed (both input or
+ *   module files.)
+ * 
+ * @author alvi
+ */
 public class Jeannie {
 	private static final Logger LOG = LoggerFactory.getLogger(Jeannie.class);
 	
@@ -74,6 +86,10 @@ public class Jeannie {
 		init(modulelocation, inputlocation, outputlocation);
 	}
 	
+	public void init() {
+		init(module.getModule(), inputlocation, outputlocation);
+	}
+	
 	public void init(
 			File modulelocation, 
 			File inputlocation,
@@ -81,13 +97,16 @@ public class Jeannie {
 	) {
 		TimeTaker tt = new TimeTaker();
 		try {
+			if (isUpToDate()) {
+				return;
+			}
 			this.module = new Module(modulelocation);
 			this.inputlocation = inputlocation;
 			this.outputlocation = outputlocation;
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
 			this.scanner.init();
-
+			JeannieProperties.log();
 			handleParsers();
 		}
 		finally {
@@ -98,32 +117,24 @@ public class Jeannie {
 	/**
 	 * never stops and calls generator whenever it detects a change.
 	 */
-	public static void looper() {
-		Jeannie jeannie = new Jeannie(
-				"",
-				"",
-				""
-		);
-		
-		Module module = jeannie.getModule();
+	public void looper() {
 		ChangeChecker modulefiles = new ChangeChecker(module.getModule());
-		ChangeChecker inputfiles = new ChangeChecker(jeannie.getInputlocation());
+		ChangeChecker inputfiles = new ChangeChecker(inputlocation);
 		inputfiles.hasChangedFiles(); // don't parse first time
 		int n = 0;
 		do {
 			try {
-				// don't do this all the time...
-				if (n % 4 == 0) {
+				if (n % 4 == 0) { // expensive. don't do this all the time...
 					modulefiles = detectChanges(module.getModule(), modulefiles);
-					inputfiles = detectChanges(jeannie.getInputlocation(), inputfiles);
+					inputfiles = detectChanges(inputlocation, inputfiles);
 				}
 				
 				if (inputfiles.hasChangedFiles()) {
-					jeannie.handleParsers();
-					jeannie.generate();
+					handleParsers();
+					generate();
 				}
 				if (modulefiles.hasChangedFiles()) {
-					jeannie.generate();
+					generate();
 				}
 				Thread.sleep(500);
 			}
@@ -141,12 +152,24 @@ public class Jeannie {
 		return cc;
 	}
 	
+	private boolean isUpToDate() {
+		String skip = JeannieProperties.getGlobalSkipUptodateCheck();
+		if (!Boolean.parseBoolean(skip)) {
+			return true;
+		}
+		return true;
+	}
+	
 	// 1-n
 	// n->n
 	// n-1
 	public void generate() {
 		TimeTaker tt = new TimeTaker();
 		try {
+			if (isUpToDate()) {
+				LOG.info("no files changed, generation skipped!");
+				return;
+			}
 			handleProcessors();
 			rebuildContext();
 			LOG.info("\n{}", Index.index(context, preprocessors, postprocessors));
@@ -154,7 +177,11 @@ public class Jeannie {
 			List<STGroup> groups = new ArrayList<STGroup>();
 			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
 			for (File template : templfiles) {
-				STGroupFile stgf = new STGroupFile(template.getAbsolutePath());
+				STGroupFile stgf = new STGroupFile(
+						template.getAbsolutePath(), 
+						JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
+						JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
+				);
 				groups.add(stgf);
 			}
 
@@ -228,10 +255,6 @@ public class Jeannie {
 		catch (IOException e) {
 			LOG.error("couldn't write!", e);
 		}
-	}
-	
-	private Module getModule() {
-		return module;
 	}
 	
 	private void rebuildContext() {
@@ -412,9 +435,5 @@ public class Jeannie {
 			LOG.error("         - " + Preprocessor.class.getName());
 			LOG.error("         - " + Postprocessor.class.getName());
 		}
-	}
-
-	public File getInputlocation() {
-		return inputlocation;
 	}
 }
