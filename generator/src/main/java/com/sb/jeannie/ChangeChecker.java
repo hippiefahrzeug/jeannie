@@ -40,6 +40,10 @@ public class ChangeChecker {
 	 * @param path
 	 */
 	public void add(File path) {
+		if (path == null) {
+			return;
+		}
+		
 		if (!path.isDirectory()) {
 			files.add(path);
 		}

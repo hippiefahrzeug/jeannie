@@ -66,6 +66,7 @@ public class Jeannie {
 	private Map<String, Object> context;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
+	private File modulelocation;
 	private File outputlocation;
 	private File inputlocation;
 	private ClassScanner scanner;
@@ -87,7 +88,7 @@ public class Jeannie {
 	}
 	
 	public void init() {
-		init(module.getModule(), inputlocation, outputlocation);
+		init(modulelocation, inputlocation, outputlocation);
 	}
 	
 	public void init(
@@ -97,12 +98,15 @@ public class Jeannie {
 	) {
 		TimeTaker tt = new TimeTaker();
 		try {
+			this.modulelocation = modulelocation;
+			this.inputlocation = inputlocation;
+			this.outputlocation = outputlocation;
+			
 			if (isUpToDate()) {
 				return;
 			}
+			
 			this.module = new Module(modulelocation);
-			this.inputlocation = inputlocation;
-			this.outputlocation = outputlocation;
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
 			this.scanner.init();
@@ -155,7 +159,10 @@ public class Jeannie {
 	private boolean isUpToDate() {
 		String skip = JeannieProperties.getGlobalSkipUptodateCheck();
 		if (!Boolean.parseBoolean(skip)) {
-			return true;
+			boolean u = false;
+			u = u || ChangeChecker.newerThan(inputlocation, outputlocation);
+			u = u || ChangeChecker.newerThan(modulelocation, outputlocation);
+			return !u;
 		}
 		return true;
 	}

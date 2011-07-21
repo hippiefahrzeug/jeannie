@@ -3,7 +3,7 @@ properties ::= [
 	"type" : "yaml",
         // this template generates java files, the JavaPostprocessor
         // takes care of creating a file in the correct location
-	"postprocessor" : "JavaPostprocessor"
+	"apostprocessor" : "JavaPostprocessor"
 ]
 
 db2java ::= [
