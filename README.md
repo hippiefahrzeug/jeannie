@@ -32,7 +32,7 @@ Because of this reason, you probably ended up creating your own ad-hoc generator
 
 jeannie is optimized to address these problems and helps greatly in reusing your generators. It has a very simple concept: Everything that defines how something is generated is contained within a module. A module is a well defined collection of files:
 
-    module/             - can be named authing
+    module/             - can be named anything
         scriptlets/     - contains your groovy scripts (optional)
         templates/      - contains the templates
         BANNER          - this is printed out whenever this generator runs
