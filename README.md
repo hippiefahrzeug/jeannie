@@ -26,7 +26,7 @@ If the last two points doesn't make any sense, that's ok. You just need to know 
 Some words about generators
 ---------------------------
 
-There is an absolute need for code generation, no doubt about it. Whenever you're looking for a general purpose generator, you will find huge frameworks/software platforms, and they will all occupy for hours, if not days to get a 'hello world' generated. These tools often have their uses, for instance in MDA where this kind of complexity is... reassuring. However, if you just want to generate some smaller things, the effort is noever justified to use these tools, as they are slow, big, complicated and usually no fun.
+There is an absolute need for code generation, no doubt about it. Whenever you're looking for a general purpose generator, you will find huge frameworks/software platforms, and they will all occupy you for hours if not days to get a 'hello world' generated. These tools often have their purpose, for instance as an MDA tool where this kind of complexity is... reassuring. However, if you just want to generate some smaller things, the effort is noever justified to use these tools, as they are slow, big, complicated and usually no fun.
 
 Because of this reason, most developers end up creating their own ad-hoc generators. They get the job done, but the problem is that such generators are often not reusable (or hard to reuse).
 
@@ -40,4 +40,10 @@ jeannie is optimized for reuse of a generator. It has a very simple concept: Eve
 
 You'll basically create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module.
 
-5
+currently working on
+--------------------
+
+- tutorial
+- giving final polish for first release
+- adding 1-n and n-1 support (n-n works)
+
