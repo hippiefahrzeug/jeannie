@@ -1,9 +1,9 @@
 package com.sb.jeannie.interfaces;
 
-import java.util.Map;
+import com.sb.jeannie.beans.Context;
 
 public interface ProcessorBase {
-	public void init(Map<String, Object> context);
+	public void init(Context context);
 	public String getName();
 	public String getDescription();
 }

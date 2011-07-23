@@ -4,13 +4,12 @@ import java.io.File;
 import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sb.jeannie.annotations.Processor;
-import com.sb.jeannie.beans.Index;
+import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
@@ -26,7 +25,7 @@ public class JavaPostprocessor extends DefaultPostprocessor implements Postproce
 		return "sets output location: <package>/<classname>.java";
 	}
 
-	public void init(Map<String, Object> context) {
+	public void init(Context context) {
 		super.init(context);
 		parse();
 	}
@@ -47,7 +46,7 @@ public class JavaPostprocessor extends DefaultPostprocessor implements Postproce
 	}
 	
 	private void parse() {
-		String result = (String)getContext().get(Index.RESULT);
+		String result = (String)getContext().getResult();
 		try {
 			StringReader sr = new StringReader(result);
 			builder = new JavaDocBuilder();

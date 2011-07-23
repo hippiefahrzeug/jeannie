@@ -5,8 +5,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.stringtemplate.v4.ST;
-import org.stringtemplate.v4.STGroup;
 
 public abstract class BeanSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(BeanSupport.class);
@@ -38,25 +36,6 @@ public abstract class BeanSupport {
 		for (String key : keys) {
 			if (propertyMap.containsKey(key)) {
 				String val = (String)properties.get(key);
-				getProps().put(key, val);
-			}
-		}
-	}
-
-	/**
-	 * queries the template group for a set of templates and 
-	 * renders those available. These templates's values will then
-	 * replace the property value. The key is the template name.
-	 */
-	public void handleTemplates(
-			Map<String, String> propertyMap, 
-			STGroup stg
-	) {
-		Set<String> keys = propertyMap.keySet();
-		for (String key : keys) {
-			ST st = stg.getInstanceOf(key);
-			if (st != null) {
-				String val = st.render();
 				getProps().put(key, val);
 			}
 		}

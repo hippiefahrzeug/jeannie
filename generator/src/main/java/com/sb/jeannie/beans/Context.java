@@ -13,7 +13,9 @@ import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
 
-public class Index {
+public enum Context {
+	inst;
+	
 	private static final long serialVersionUID = -5206561164460867913L;
 	
 	private static final String NL = System.getProperty("line.separator");
@@ -33,8 +35,10 @@ public class Index {
 	public static final String ENV = "env";
 	public static final String MODULE = "module";
 	public static final String RESULT = "result";
-
+	
+	private static Map<String, Object> context;
     private static Map<String, String> index;
+    
     static {
     	index = new HashMap<String, String>();
     	index.put(INDEX, "this index");
@@ -53,9 +57,16 @@ public class Index {
     	index.put(MODULE, "the module");
     	index.put(RESULT, "the output after phase 1");
     }
-
+    
+    public static void init() {
+    	Context.context = new HashMap<String, Object>();
+	}
+    
+    public static void put(String key, Object value) {
+    	context.put(key, value);
+    }
+    
     public static String index(
-    		Map<String, Object> context, 
     		Map<String, Preprocessor> preprocessors,
     		Map<String, Postprocessor> postprocessors
     ) {
@@ -146,4 +157,68 @@ public class Index {
 		
 		return String.format("(type: %s)", object.getClass().getName());
     }
+    
+    public Object getIndex() {
+        return context.get(INDEX);
+    }
+    
+    public Object getAll() {
+        return context.get(ALL);
+    }
+    
+    public Object getAllfiles() {
+        return context.get(ALL_FILES);
+    }
+    
+    public Object getCurrent() {
+        return context.get(CURRENT);
+    }
+    
+    public Object getCurrentfile() {
+        return context.get(CURRENT_FILE);
+    }
+    
+    public Object getParsers() {
+        return context.get(PARSERS);
+    }
+    
+    public Object getScriptlets() {
+        return context.get(SCRIPTLETS);
+    }
+    
+    public Object getProperties() {
+        return context.get(PROPERTIES);
+    }
+    
+    public Object getSystemproperties() {
+        return context.get(SYSTEM_PROPERTIES);
+    }
+    
+    public Object getInfo() {
+        return context.get(INFO);
+    }
+    
+    public Object getCurrenttemplate() {
+        return context.get(CURRENT_TEMPLATE);
+    }
+    
+    public Object getObjectmap() {
+        return context.get(OBJECTMAP);
+    }
+    
+    public Object getEnv() {
+        return context.get(ENV);
+    }
+    
+    public Object getModule() {
+        return context.get(MODULE);
+    }
+    
+    public Object getResult() {
+        return context.get(RESULT);
+    }
+
+	public Map<String, Object> getContext() {
+		return context;
+	}
 }

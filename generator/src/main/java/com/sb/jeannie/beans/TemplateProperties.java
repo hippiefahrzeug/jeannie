@@ -2,7 +2,9 @@ package com.sb.jeannie.beans;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
 /**
@@ -28,6 +30,7 @@ import org.stringtemplate.v4.STGroup;
  * @author alvi
  */
 public class TemplateProperties extends BeanSupport {
+	private static final String MAIN = "main";
 	private static final String EXTENSION = "extension";
 	private static final String TYPE = "type";
 	private static final String OUTPUTNAME = "outputname";
@@ -40,6 +43,7 @@ public class TemplateProperties extends BeanSupport {
 
 	static {
 		PROPERTY_MAP = new HashMap<String, String>();
+		PROPERTY_MAP.put(MAIN, "the main template");
 		PROPERTY_MAP.put(EXTENSION, "extension of a file");
 		PROPERTY_MAP.put(TYPE, "type of the parser of the current object");
 		PROPERTY_MAP.put(OUTPUTNAME, "name of the generated file");
@@ -57,6 +61,28 @@ public class TemplateProperties extends BeanSupport {
 		handleProperties(PROPERTY_MAP, properties);
 	}
 
+	/**
+	 * queries the template group for a set of templates and 
+	 * renders those available. These templates's values will then
+	 * replace the property value. The key is the template name.
+	 */
+	public void handleTemplates(
+			Map<String, String> propertyMap, 
+			STGroup stg
+	) {
+		Set<String> keys = propertyMap.keySet();
+		for (String key : keys) {
+			ST st = stg.getInstanceOf(key);
+			// note that 'main' must be rendered last, and whether
+			// it is rendered at all depends on type, extension
+			// and dontgenerate
+			if (st != null && !key.equals(MAIN)) {
+				String val = st.render();
+				getProps().put(key, val);
+			}
+		}
+	}
+	
 	protected Map<String, String> getPropertyMap() {
 		return PROPERTY_MAP;
 	}

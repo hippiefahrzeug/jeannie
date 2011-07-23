@@ -3,7 +3,6 @@ package com.sb.jeannie.processors;
 import java.io.File;
 
 import com.sb.jeannie.annotations.Processor;
-import com.sb.jeannie.beans.Index;
 import com.sb.jeannie.interfaces.Postprocessor;
 
 @Processor
@@ -13,12 +12,12 @@ public class DefaultPostprocessor extends DefaultProcessor implements Postproces
 	}
 
 	public String getOutputdir() {
-		Object obj = getContext().get(Index.CURRENT_TEMPLATE);
+		Object obj = getContext().getCurrenttemplate();
 		return obj.toString();
 	}
 
 	public String getOutputname() {
-		File f = (File)getContext().get(Index.CURRENT_FILE);
+		File f = (File)getContext().getCurrentfile();
 		return f.getName();
 	}
 

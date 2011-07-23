@@ -27,7 +27,7 @@ import org.stringtemplate.v4.misc.ErrorBuffer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.sb.jeannie.beans.Index;
+import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.beans.Module;
@@ -63,7 +63,6 @@ public class Jeannie {
 	private Map<String, ProcessorBase> scriptlets;
 	private Map<String, Preprocessor> preprocessors;
 	private Map<String, Postprocessor> postprocessors;
-	private Map<String, Object> context;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
 	private File modulelocation;
@@ -178,7 +177,7 @@ public class Jeannie {
 			}
 			handleProcessors();
 			rebuildContext();
-			LOG.info("\n{}", Index.index(context, preprocessors, postprocessors));
+			LOG.info("\n{}", Context.index(preprocessors, postprocessors));
 
 			List<STGroup> groups = new ArrayList<STGroup>();
 			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
@@ -196,14 +195,15 @@ public class Jeannie {
 				rebuildContext();
 				String fileType = fileTypes.get(file);
 				String extension = Utils.fileExtension(file);
-				context.put(Index.CURRENT, allInputObjects.get(file));
-				context.put(Index.CURRENT_FILE, file);
+				Context.put(Context.CURRENT, allInputObjects.get(file));
+				Context.put(Context.CURRENT_FILE, file);
 				for (STGroup stg : groups) {
-					context.put(Index.CURRENT_TEMPLATE, stg.getName());
-					context.put(Index.INDEX, Index.index(context, preprocessors, postprocessors));
+					Context.put(Context.CURRENT_TEMPLATE, stg.getName());
+					Context.put(Context.INDEX, Context.index(preprocessors, postprocessors));
 					
-					stg.defineDictionary(CONTEXT, context);
+					stg.defineDictionary(CONTEXT, Context.inst.getContext());
 					stg.registerRenderer(String.class, new StringRenderer());
+					
 					ST st = stg.getInstanceOf("main");
 					if (st == null) {
 						LOG.error("no 'main' template defined!");
@@ -211,19 +211,19 @@ public class Jeannie {
 					}
 
 					for (Preprocessor preprocessor : preprocessors.values()) {
-						preprocessor.init(context);
+						preprocessor.init(Context.inst);
 					}
 					
-					Map<String, Object> properties = stg.rawGetDictionary(Index.PROPERTIES);
+					Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
 					TemplateProperties tp = new TemplateProperties(stg, properties);
+					
 					if (
 						(tp.getType() == null || fileType.equals(tp.getType())) &&
 						(tp.getExtension() == null || extension.equals(tp.getExtension()))
 					) {
 						String result = st.render();
 						LOG.error(stg.getListener().toString());
-						// st.inspect();
-						context.put(Index.RESULT, result);
+						Context.put(Context.RESULT, result);
 						handleWrite(tp, result);
 					}
 				}
@@ -241,7 +241,7 @@ public class Jeannie {
 			String outputname = tp.getOutputname();
 			Boolean dontgenerate = tp.isDontgenerate();
 			
-			postprocessor.init(context);
+			postprocessor.init(Context.inst);
 			
 			// the templateproperties always win!
 			outputdir = Utils.nvl(outputdir, postprocessor.getOutputdir());
@@ -273,20 +273,20 @@ public class Jeannie {
 	private void rebuildContext() {
 		Map<String, String> env = System.getenv();
 		Properties sysprops = System.getProperties();
-		context = new HashMap<String, Object>();
-		context.put(Index.ALL, allInputObjects.values());
-		context.put(Index.ALL_FILES, allfiles);
-		context.put(Index.MODULE, module);
-		context.put(Index.CURRENT, null);
-		context.put(Index.CURRENT_FILE, null);
-		context.put(Index.CURRENT_TEMPLATE, null);
-		context.put(Index.ENV, env);
-		context.put(Index.INFO, new Info(inputlocation, outputlocation));
-		context.put(Index.OBJECTMAP, allInputObjects);
-		context.put(Index.PARSERS, scanner.getParsers());
-		//context.put(Index.PROPERTIES, null);
-		context.put(Index.SCRIPTLETS, scriptlets);
-		context.put(Index.SYSTEM_PROPERTIES, sysprops);
+		Context.init();
+		Context.put(Context.ALL, allInputObjects.values());
+		Context.put(Context.ALL_FILES, allfiles);
+		Context.put(Context.MODULE, module);
+		Context.put(Context.CURRENT, null);
+		Context.put(Context.CURRENT_FILE, null);
+		Context.put(Context.CURRENT_TEMPLATE, null);
+		Context.put(Context.ENV, env);
+		Context.put(Context.INFO, new Info(inputlocation, outputlocation));
+		Context.put(Context.OBJECTMAP, allInputObjects);
+		Context.put(Context.PARSERS, scanner.getParsers());
+		//Context.put(Context.PROPERTIES, null);
+		Context.put(Context.SCRIPTLETS, scriptlets);
+		Context.put(Context.SYSTEM_PROPERTIES, sysprops);
 	}
 
 	private void handleProcessors() {
