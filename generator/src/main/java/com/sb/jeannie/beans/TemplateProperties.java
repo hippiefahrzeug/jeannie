@@ -30,11 +30,12 @@ import org.stringtemplate.v4.STGroup;
  * @author alvi
  */
 public class TemplateProperties extends BeanSupport {
-	private static final String MAIN = "main";
+	public static final String MAIN = "main";
 	private static final String EXTENSION = "extension";
 	private static final String TYPE = "type";
 	private static final String OUTPUTNAME = "outputname";
 	private static final String OUTPUTDIR = "outputdir";
+	// private static final String PREPROCESSOR = "preprocessor";
 	private static final String POSTPROCESSOR = "postprocessor";
 	private static final String DONTGENERATE = "dontgenerate";
 
@@ -48,7 +49,8 @@ public class TemplateProperties extends BeanSupport {
 		PROPERTY_MAP.put(TYPE, "type of the parser of the current object");
 		PROPERTY_MAP.put(OUTPUTNAME, "name of the generated file");
 		PROPERTY_MAP.put(OUTPUTDIR, "directory of the generated file");
-		PROPERTY_MAP.put(POSTPROCESSOR, "desired post processor(s)");
+		// PROPERTY_MAP.put(PREPROCESSOR, "desired pre processor");
+		PROPERTY_MAP.put(POSTPROCESSOR, "desired post processor");
 		PROPERTY_MAP.put(DONTGENERATE, "set to true if file shouldn't be written");
 	};
 	
@@ -94,7 +96,11 @@ public class TemplateProperties extends BeanSupport {
 	public void log() {
 		log(PROPERTY_MAP, props);
 	}
-
+/*
+	public String getPreprocessor() {
+		return props.get(PREPROCESSOR);
+	}
+*/
 	public String getPostprocessor() {
 		return props.get(POSTPROCESSOR);
 	}

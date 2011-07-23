@@ -204,9 +204,11 @@ public class Jeannie {
 					stg.defineDictionary(CONTEXT, Context.inst.getContext());
 					stg.registerRenderer(String.class, new StringRenderer());
 					
-					ST st = stg.getInstanceOf("main");
+					ST st = stg.getInstanceOf(TemplateProperties.MAIN);
 					if (st == null) {
 						LOG.error("no 'main' template defined!");
+						LOG.error("HINT: make sure that your template group contains");
+						LOG.error("      a template named 'main'.");
 						continue;
 					}
 

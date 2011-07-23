@@ -7,7 +7,7 @@ class Slurp extends DefaultPreprocessor {
 
     def getModel() {
        def smap = []
-       getContext().get("current").collect() { 
+       getContext().getCurrent().collect() { 
          smap.add([it.get(0).toUpperCase().trim(), toCamelCase(it.get(0).toLowerCase().trim()), it.get(2).trim()])
        }
        return smap
@@ -24,7 +24,7 @@ class Slurp extends DefaultPreprocessor {
 
     def getDefaults() {
        def smap = []
-       getContext().get("current").collect() { it ->
+       getContext().getCurrent().collect() { it ->
            if (it.get(1).trim() == '""') {
              smap.add([it.get(0).toUpperCase().trim(), '\\"'])
            }
