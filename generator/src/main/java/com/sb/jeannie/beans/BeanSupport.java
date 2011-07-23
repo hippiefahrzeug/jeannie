@@ -47,10 +47,11 @@ public abstract class BeanSupport {
 	 * queries the template group for a set of templates and 
 	 * renders those available. These templates's values will then
 	 * replace the property value. The key is the template name.
-	 * 
-	 * @param stg
 	 */
-	public void handleTemplates(Map<String, String> propertyMap, STGroup stg) {
+	public void handleTemplates(
+			Map<String, String> propertyMap, 
+			STGroup stg
+	) {
 		Set<String> keys = propertyMap.keySet();
 		for (String key : keys) {
 			ST st = stg.getInstanceOf(key);

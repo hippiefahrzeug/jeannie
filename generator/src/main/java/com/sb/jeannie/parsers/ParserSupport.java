@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sb.jeannie.Utils;
 import com.sb.jeannie.annotations.Parser;
 import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.utils.TimeTaker;
@@ -48,7 +49,6 @@ public abstract class ParserSupport {
     
     public void addFile(File file) {
     	totalFiles++;
-    	String name = file.getName();
     	String types = JeannieProperties.getGlobalTypes();
     	if (types != null) {
         	if (!(types.contains(type) || types.equals("all"))) {
@@ -62,12 +62,7 @@ public abstract class ParserSupport {
         	return;
     	}
     	
-    	int lastIndexOf = name.lastIndexOf('.');
-    	if (lastIndexOf == -1 || lastIndexOf == name.length()) {
-    		return;
-    	}
-		String fext = name.substring(lastIndexOf+1);
-    	if (extensions.contains(fext)) {
+    	if (extensions.contains(Utils.fileExtension(file))) {
     		LOG.debug("'{}' adding '{}'", type, file.getParentFile().getName() + "/" + file.getName());
         	files.add(file);
     	}

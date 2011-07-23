@@ -195,6 +195,7 @@ public class Jeannie {
 			for (File file : allfiles) {
 				rebuildContext();
 				String fileType = fileTypes.get(file);
+				String extension = Utils.fileExtension(file);
 				context.put(Index.CURRENT, allInputObjects.get(file));
 				context.put(Index.CURRENT_FILE, file);
 				for (STGroup stg : groups) {
@@ -215,7 +216,10 @@ public class Jeannie {
 					
 					Map<String, Object> properties = stg.rawGetDictionary(Index.PROPERTIES);
 					TemplateProperties tp = new TemplateProperties(stg, properties);
-					if (tp.getType() == null || fileType.equals(tp.getType())) {
+					if (
+						(tp.getType() == null || fileType.equals(tp.getType())) &&
+						(tp.getExtension() == null || extension.equals(tp.getExtension()))
+					) {
 						String result = st.render();
 						LOG.error(stg.getListener().toString());
 						// st.inspect();

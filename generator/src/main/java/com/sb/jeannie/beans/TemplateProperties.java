@@ -48,7 +48,10 @@ public class TemplateProperties extends BeanSupport {
 		PROPERTY_MAP.put(DONTGENERATE, "set to true if file shouldn't be written");
 	};
 	
-	public TemplateProperties(STGroup stg, Map<String, Object> properties) {
+	public TemplateProperties(
+			STGroup stg, 
+			Map<String, Object> properties
+	) {
 		props = new HashMap<String, String>();
 		handleTemplates(PROPERTY_MAP, stg);
 		handleProperties(PROPERTY_MAP, properties);

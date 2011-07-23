@@ -143,7 +143,16 @@ public class Utils {
 		}
     }
     
-    static <T> T nvl(T in, T def) {
+    public static String fileExtension(File file) {
+    	String name = file.getName();
+    	int lastIndexOf = name.lastIndexOf('.');
+    	if (lastIndexOf == -1 || lastIndexOf == name.length()) {
+    		return "";
+    	}
+    	return name.substring(lastIndexOf+1);
+    }
+
+    public static <T> T nvl(T in, T def) {
     	if(in == null) {
     		return def;
     	}
