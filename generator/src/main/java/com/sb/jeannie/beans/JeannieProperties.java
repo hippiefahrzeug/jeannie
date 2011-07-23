@@ -3,8 +3,6 @@ package com.sb.jeannie.beans;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.stringtemplate.v4.STGroup;
-
 /**
  * @author alvi
  */
@@ -19,6 +17,9 @@ public class JeannieProperties extends BeanSupport {
     public static final String CSV_SEPARATOR = "csvSeparator";
     public static final String CSV_SKIP_LINES = "csvSkipLines";
     public static final String CSV_QUOTE_CHARACTER = "csvQuoteCharacter";
+
+    protected static Map<String, String> PROPERTY_MAP;
+	protected static Map<String, String> props;
 
     static {
         PROPERTY_MAP = new HashMap<String, String>();
@@ -49,11 +50,22 @@ public class JeannieProperties extends BeanSupport {
         props.put(CSV_QUOTE_CHARACTER, "\"");
     }
     
-    public JeannieProperties(STGroup stg, Map<String, Object> properties) {
-        handleTemplates(PROPERTY_MAP, stg);
+    public JeannieProperties(Map<String, Object> properties) {
         handleProperties(PROPERTY_MAP, properties);
     }
 
+	protected Map<String, String> getPropertyMap() {
+		return PROPERTY_MAP;
+	}
+
+	protected Map<String, String> getProps() {
+		return props;
+	}
+
+	public static void log() {
+		log(PROPERTY_MAP, props);
+	}
+	
     public static String getGlobalEncoding() {
         return props.get(GLOBAL_ENCODING);
     }

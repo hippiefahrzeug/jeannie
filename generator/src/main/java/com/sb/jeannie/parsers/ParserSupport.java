@@ -30,13 +30,17 @@ public abstract class ParserSupport {
 	public abstract Object parse(File file);
 	
     public ParserSupport() {
+    	init();
+	}
+    
+    public void init() {
     	Parser ann = getClass().getAnnotation(Parser.class);
     	type = ann.type();
     	List<String> exList = Arrays.asList(ann.extensions());
     	extensions = new HashSet<String>(exList);
     	prio = ann.prio();
     	files = new ArrayList<File>();
-	}
+    }
     
     public boolean isA(File file) {
     	return files.contains(file);
@@ -46,8 +50,10 @@ public abstract class ParserSupport {
     	totalFiles++;
     	String name = file.getName();
     	String types = JeannieProperties.getGlobalTypes();
-    	if (!(types.contains(type) || types.equals("all"))) {
-    		return;
+    	if (types != null) {
+        	if (!(types.contains(type) || types.equals("all"))) {
+        		return;
+        	}
     	}
     	
     	// default behavior: always add the file!

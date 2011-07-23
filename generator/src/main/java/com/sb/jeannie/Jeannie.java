@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
+import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -57,7 +58,6 @@ public class Jeannie {
 	private static final String STG_SUFFIX = "stg";
 	private static final String CONTEXT = "context";
 	
-	private List<ParserSupport> parsers;
 	private List<File> allfiles;
 	private Map<File, String> fileTypes;
 	private Map<String, ProcessorBase> scriptlets;
@@ -101,15 +101,9 @@ public class Jeannie {
 			this.modulelocation = modulelocation;
 			this.inputlocation = inputlocation;
 			this.outputlocation = outputlocation;
-			
-			if (isUpToDate()) {
-				return;
-			}
-			
 			this.module = new Module(modulelocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
-			this.scanner.init();
 			JeannieProperties.log();
 			handleParsers();
 		}
@@ -134,6 +128,11 @@ public class Jeannie {
 				}
 				
 				if (inputfiles.hasChangedFiles()) {
+					List<ParserSupport> parsers = scanner.getParsers();
+					for (ParserSupport parser : parsers) {
+						parser.init();
+					}
+					this.allfiles = Utils.allfiles(inputlocation);
 					handleParsers();
 					generate();
 				}
@@ -189,6 +188,7 @@ public class Jeannie {
 						JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
 						JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
 				);
+				stgf.setListener(new ErrorBuffer());
 				groups.add(stgf);
 			}
 
@@ -217,6 +217,8 @@ public class Jeannie {
 					TemplateProperties tp = new TemplateProperties(stg, properties);
 					if (tp.getType() == null || fileType.equals(tp.getType())) {
 						String result = st.render();
+						LOG.error(stg.getListener().toString());
+						// st.inspect();
 						context.put(Index.RESULT, result);
 						handleWrite(tp, result);
 					}
@@ -277,7 +279,7 @@ public class Jeannie {
 		context.put(Index.ENV, env);
 		context.put(Index.INFO, new Info(inputlocation, outputlocation));
 		context.put(Index.OBJECTMAP, allInputObjects);
-		context.put(Index.PARSERS, parsers);
+		context.put(Index.PARSERS, scanner.getParsers());
 		//context.put(Index.PROPERTIES, null);
 		context.put(Index.SCRIPTLETS, scriptlets);
 		context.put(Index.SYSTEM_PROPERTIES, sysprops);
@@ -293,8 +295,8 @@ public class Jeannie {
 	}
 
 	private void handleParsers() {
-		parsers = scanner.getParsers();
-		
+		List<ParserSupport> parsers = scanner.getParsers();
+
 		for (File file : allfiles) {
 			for (ParserSupport parser : parsers) {
 				parser.addFile(file);

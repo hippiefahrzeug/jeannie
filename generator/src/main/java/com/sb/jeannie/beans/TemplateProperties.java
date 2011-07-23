@@ -35,6 +35,9 @@ public class TemplateProperties extends BeanSupport {
 	private static final String POSTPROCESSOR = "postprocessor";
 	private static final String DONTGENERATE = "dontgenerate";
 
+    protected static Map<String, String> PROPERTY_MAP;
+	protected static Map<String, String> props;
+
 	static {
 		PROPERTY_MAP = new HashMap<String, String>();
 		PROPERTY_MAP.put(EXTENSION, "extension of a file");
@@ -49,6 +52,18 @@ public class TemplateProperties extends BeanSupport {
 		props = new HashMap<String, String>();
 		handleTemplates(PROPERTY_MAP, stg);
 		handleProperties(PROPERTY_MAP, properties);
+	}
+
+	protected Map<String, String> getPropertyMap() {
+		return PROPERTY_MAP;
+	}
+
+	protected Map<String, String> getProps() {
+		return props;
+	}
+	
+	public void log() {
+		log(PROPERTY_MAP, props);
 	}
 
 	public String getPostprocessor() {

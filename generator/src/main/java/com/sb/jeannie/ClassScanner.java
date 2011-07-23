@@ -39,6 +39,10 @@ public class ClassScanner {
 	private List<ParserSupport> parsers = new ArrayList<ParserSupport>();
 	private List<ProcessorBase> processors = new ArrayList<ProcessorBase>();
 
+	public ClassScanner() {
+		init();
+	}
+	
     public void init() {
 		Predicate<String> filters = null;
 		if (System.getProperty(EXTERNAL_PACKAGE) != null) {

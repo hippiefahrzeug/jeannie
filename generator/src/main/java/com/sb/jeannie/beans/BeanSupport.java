@@ -11,17 +11,17 @@ import org.stringtemplate.v4.STGroup;
 public abstract class BeanSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(BeanSupport.class);
 	
-    protected static Map<String, String> PROPERTY_MAP;
-	protected static Map<String, String> props;
-
 	public BeanSupport() {
 		super();
 	}
 	
-    public static void log() {
-		Set<String> keys = PROPERTY_MAP.keySet();
+	abstract protected Map<String, String> getPropertyMap();
+	abstract protected Map<String, String> getProps();
+	
+    public static void log(Map<String, String> propertyMap, Map<String, String> props) {
+		Set<String> keys = propertyMap.keySet();
 		for (String key : keys) {
-			String t = String.format("%s %s (%s)", key, PROPERTY_MAP.get(key), props.get(key));
+			String t = String.format("%s %s (%s)", key, propertyMap.get(key), props.get(key));
 			LOG.info("{}", t);
 		}
     }
@@ -38,7 +38,7 @@ public abstract class BeanSupport {
 		for (String key : keys) {
 			if (propertyMap.containsKey(key)) {
 				String val = (String)properties.get(key);
-				props.put(key, val);
+				getProps().put(key, val);
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public abstract class BeanSupport {
 			ST st = stg.getInstanceOf(key);
 			if (st != null) {
 				String val = st.render();
-				props.put(key, val);
+				getProps().put(key, val);
 			}
 		}
 	}

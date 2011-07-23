@@ -7,7 +7,12 @@ com.sb.jeannie.Jeannie.geng();
 
 
 
-com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie();
+com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
+"/home/alvi/projects/jeannie/generator/../modules/testbed",
+"/home/alvi/projects/jeannie/generator/../test",
+"/home/alvi/projects/jeannie/generator/../generator/target/test/testbed"
+
+);
 genie.init();
 genie.generate();
 
@@ -26,6 +31,28 @@ String b = "/home/alvi/projects/jeannie/";
 com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
 		b + "modules/propertyslurper", b + "test/input", "/tmp/propertyslurper");
 genie.looper();
+com.sun.jdi.VMDisconnectedException: Got IOException from Virtual Machine
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:165)
+	at org.eclipse.jdi.internal.connect.PacketReceiveManager.getReply(PacketReceiveManager.java:180)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:174)
+	at org.eclipse.jdi.internal.MirrorImpl.requestVM(MirrorImpl.java:192)
+	at org.eclipse.jdi.internal.ObjectReferenceImpl.invokeMethod(ObjectReferenceImpl.java:395)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread.invokeMethod(JDIThread.java:847)
+	at org.eclipse.jdt.internal.debug.core.model.JDIObjectValue.sendMessage(JDIObjectValue.java:85)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine.run(LocalEvaluationEngine.java:230)
+	at org.eclipse.jdt.internal.debug.core.model.JDIThread.runEvaluation(JDIThread.java:681)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine.acceptClassFiles(LocalEvaluationEngine.java:217)
+	at org.eclipse.jdt.internal.core.eval.RequestorWrapper.acceptClassFiles(RequestorWrapper.java:48)
+	at org.eclipse.jdt.internal.eval.EvaluationContext.evaluate(EvaluationContext.java:289)
+	at org.eclipse.jdt.internal.eval.EvaluationContext.evaluate(EvaluationContext.java:308)
+	at org.eclipse.jdt.internal.core.eval.EvaluationContextWrapper.evaluateCodeSnippet(EvaluationContextWrapper.java:244)
+	at org.eclipse.jdt.internal.debug.eval.LocalEvaluationEngine$1.run(LocalEvaluationEngine.java:428)
+	at java.lang.Thread.run(Thread.java:679)
 
 
 System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage().getName());
+
+
+System.out.println(com.sb.jeannie.ChangeChecker.newerThan(
+		new java.io.File("/home/alvi/projects/jeannie/generator/../test"), 
+		new java.io.File("/home/alvi/projects/jeannie/generator/../generator/target/test/testbed")));
