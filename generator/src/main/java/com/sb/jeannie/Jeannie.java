@@ -348,12 +348,12 @@ public class Jeannie {
 				Gson gson = new Gson();
 				FileReader fr = new FileReader(classmapFile);
 		        classMap = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
-				LOG.info("processors found: {}", classMap.keySet());
+				LOG.debug("processors found: {}", classMap.keySet());
 			}
 			
 			if (classMap == null || 
 				ChangeChecker.newerThan(module.getScriptlets(), target)) {
-				LOG.info("recompiling scriptlets...");
+				LOG.debug("recompiling scriptlets...");
 				Utils.deleteAll(target);
 				CompilerConfiguration cc = new CompilerConfiguration();
 				cc.setDebug(true);
@@ -366,7 +366,7 @@ public class Jeannie {
 				List<File> scriptlets = Utils.allfiles(module.getScriptlets(), GROOVY_SUFFIX);
 				classMap = new HashMap<String, String>();
 				for (File file : scriptlets) {
-					LOG.info("   * {}", file.getName());
+					LOG.debug("   * {}", file.getName());
 					CompilationUnit cu = new CompilationUnit();
 					cu.addSource(new File(module.getScriptlets(), file.getName()));
 					cu.setConfiguration(cc);
@@ -378,7 +378,7 @@ public class Jeannie {
 						LOG.error("will use first class only.");
 					}
 					String scriptletClassName = cu.getFirstClassNode().getName();
-					LOG.info("    ---> {}", scriptletClassName);
+					LOG.debug("    ---> {}", scriptletClassName);
 					classMap.put(file.getName(), scriptletClassName);
 				}
 				

@@ -81,7 +81,7 @@ public class ClassScanner {
 			String description = annotation.type();
 			String [] extensions = annotation.extensions();
 			ParserSupport parser = (ParserSupport)instantiate(parserName, parserClass);
-			LOG.info("registering: {} (extensions: {}, prio: " + parser.getPrio() + ")", description, extensions);
+			LOG.debug("registering: {} (extensions: {}, prio: " + parser.getPrio() + ")", description, extensions);
 			parsers.add(parser);
 		}
 		
@@ -97,7 +97,7 @@ public class ClassScanner {
 		for (String processorName : processorlist) {
 			Class<?> processorClass = loadClass(processorName);
 			ProcessorBase processor = (ProcessorBase)instantiate(processorName, processorClass);
-			LOG.info("registering: {} (Processor)", processor.getName());
+			LOG.debug("registering: {} (Processor)", processor.getName());
 			processors.add(processor);
 		}
     }

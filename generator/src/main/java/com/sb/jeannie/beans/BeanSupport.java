@@ -1,5 +1,7 @@
 package com.sb.jeannie.beans;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,9 +20,11 @@ public abstract class BeanSupport {
 	
     public static void log(Map<String, String> propertyMap, Map<String, String> props) {
 		Set<String> keys = propertyMap.keySet();
-		for (String key : keys) {
-			String t = String.format("%s %s (%s)", key, propertyMap.get(key), props.get(key));
-			LOG.info("{}", t);
+		ArrayList<String> list = new ArrayList<String>(keys);
+		Collections.sort(list);
+		for (String key : list) {
+			String t = String.format("%s: %s (%s)", key, propertyMap.get(key), props.get(key));
+			LOG.debug("{}", t);
 		}
     }
 
