@@ -280,10 +280,15 @@ public class Jeannie {
 	private void parseAll() {
 		List<ParserSupport> parsers = scanner.getParsers();
 
+		KeyValuePrettyPrinter pp = new KeyValuePrettyPrinter();
 		for (File file : allfiles) {
 			for (ParserSupport parser : parsers) {
-				parser.addFile(file);
+				parser.addFile(pp, file);
 			}
+		}
+		
+		for (String line : pp.prettyPrint()) {
+			LOG.debug(line);
 		}
 		
 		allInputObjects = new InvertibleMap<File, Object>();

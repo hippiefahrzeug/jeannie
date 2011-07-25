@@ -52,10 +52,14 @@ public class ProcessorHandler {
 	
 	public void handleProcessors() {
 		resetProcessors();
-		compileScriptlets();
+		KeyValuePrettyPrinter pp = new KeyValuePrettyPrinter();
+		compileScriptlets(pp);
 		List<ProcessorBase> processors = scanner.getProcessors();
 		for (ProcessorBase processor : processors) {
-			identifyProcessor(processor.getName(), processor);
+			identifyProcessor(pp, processor.getName(), processor);
+		}
+		for (String line : pp.prettyPrint()) {
+			LOG.debug(line);
 		}
 	}
 
@@ -70,7 +74,7 @@ public class ProcessorHandler {
 	 * run for the first time. after that, if there are no scriptlet
 	 * changes, it should be fairly fast,.
 	 */
-	private void compileScriptlets() {
+	private void compileScriptlets(KeyValuePrettyPrinter pp) {
 		try {
 			File target = new File("/tmp/ttt");
 
@@ -80,7 +84,7 @@ public class ProcessorHandler {
 				Gson gson = new Gson();
 				FileReader fr = new FileReader(classmapFile);
 		        classMap = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
-				LOG.debug("processors found: {}", classMap.keySet());
+				LOG.debug("groovy processors found: {}", classMap.keySet());
 			}
 			
 			if (classMap == null || 
@@ -138,7 +142,7 @@ public class ProcessorHandler {
 				Class<?> scriptletClass = rl.loadClass(scriptletClassName);
 				
 				Object processor = scriptletClass.newInstance();
-				identifyProcessor(scriptletName, processor);
+				identifyProcessor(pp, scriptletName, processor);
 			}
 		}
 		catch (Exception e) {
@@ -161,16 +165,16 @@ public class ProcessorHandler {
 	 * @param scriptletName
 	 * @param processor
 	 */
-	private void identifyProcessor(String scriptletName, Object processor) {
+	private void identifyProcessor(KeyValuePrettyPrinter pp, String scriptletName, Object processor) {
 		if (processor instanceof Preprocessor) {
 			Preprocessor p = (Preprocessor)processor;
-			LOG.debug("'{}' is a {}", scriptletName, Preprocessor.class.getSimpleName());
+			pp.add(scriptletName, "is a " + Preprocessor.class.getSimpleName());
 			preprocessors.put(scriptletName, p);
 			scriptlets.put(scriptletName, p);
 		}
 		else if (processor instanceof Postprocessor) {
 			Postprocessor p = (Postprocessor)processor;
-			LOG.debug("'{}' is a {}", scriptletName, Postprocessor.class.getSimpleName());
+			pp.add(scriptletName, Postprocessor.class.getSimpleName());
 			postprocessors.put(scriptletName, p);
 			scriptlets.put(scriptletName, p);
 		}
@@ -181,6 +185,7 @@ public class ProcessorHandler {
 			LOG.error("      one of the following interfaces:");
 			LOG.error("         - " + Preprocessor.class.getName());
 			LOG.error("         - " + Postprocessor.class.getName());
+			return;
 		}
 	}
 

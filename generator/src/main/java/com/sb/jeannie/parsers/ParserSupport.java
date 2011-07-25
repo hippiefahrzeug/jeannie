@@ -11,6 +11,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sb.jeannie.KeyValuePrettyPrinter;
 import com.sb.jeannie.Utils;
 import com.sb.jeannie.annotations.Parser;
 import com.sb.jeannie.beans.JeannieProperties;
@@ -47,7 +48,7 @@ public abstract class ParserSupport {
     	return files.contains(file);
     }
     
-    public void addFile(File file) {
+    public void addFile(KeyValuePrettyPrinter pp, File file) {
     	totalFiles++;
     	String types = JeannieProperties.getGlobalTypes();
     	if (types != null) {
@@ -63,7 +64,9 @@ public abstract class ParserSupport {
     	}
     	
     	if (extensions.contains(Utils.fileExtension(file))) {
-    		LOG.debug("'{}' adding '{}'", type, file.getParentFile().getName() + "/" + file.getName());
+    		// LOG.debug("'{}' adding '{}'", type, file.getParentFile().getName() + "/" + file.getName());
+    		String f = String.format("adding '%s'", file.getParentFile().getName() + "/" + file.getName());
+    		pp.add("'" + type + "'", f);
         	files.add(file);
     	}
     }

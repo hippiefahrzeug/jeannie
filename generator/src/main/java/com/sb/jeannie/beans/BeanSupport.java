@@ -20,7 +20,7 @@ public abstract class BeanSupport {
     	KeyValuePrettyPrinter prettyPrinter = new KeyValuePrettyPrinter();
     	Set<String> keys = propertyMap.keySet();
 		for (String key : keys) {
-			String t = String.format("%s (%s)", propertyMap.get(key), props.get(key));
+			String t = String.format("= %s (%s)", propertyMap.get(key), props.get(key));
 			prettyPrinter.add(key, t);
 		}
 		List<String> prettyPrint = prettyPrinter.prettyPrint();

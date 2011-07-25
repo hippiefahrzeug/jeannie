@@ -30,7 +30,7 @@ public class KeyValuePrettyPrinter {
 		}
     	
     	for (String key : keys) {
-    		String t = String.format("%-" + ml + "s = %s", key, store.get(key));
+    		String t = String.format("%-" + ml + "s %s", key, store.get(key));
 			result.add(t);
 		}
 
