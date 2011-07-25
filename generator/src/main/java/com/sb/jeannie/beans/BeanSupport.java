@@ -1,16 +1,14 @@
 package com.sb.jeannie.beans;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import com.sb.jeannie.KeyValuePrettyPrinter;
 
 public abstract class BeanSupport {
-	private static final Logger LOG = LoggerFactory.getLogger(BeanSupport.class);
-	
 	public BeanSupport() {
 		super();
 	}
@@ -18,13 +16,16 @@ public abstract class BeanSupport {
 	abstract protected Map<String, String> getPropertyMap();
 	abstract protected Map<String, String> getProps();
 	
-    public static void log(Map<String, String> propertyMap, Map<String, String> props) {
-		Set<String> keys = propertyMap.keySet();
-		ArrayList<String> list = new ArrayList<String>(keys);
-		Collections.sort(list);
-		for (String key : list) {
-			String t = String.format("%s: %s (%s)", key, propertyMap.get(key), props.get(key));
-			LOG.debug("{}", t);
+    public static void log(Logger LOG, Map<String, String> propertyMap, Map<String, String> props) {
+    	KeyValuePrettyPrinter prettyPrinter = new KeyValuePrettyPrinter();
+    	Set<String> keys = propertyMap.keySet();
+		for (String key : keys) {
+			String t = String.format("%s (%s)", propertyMap.get(key), props.get(key));
+			prettyPrinter.add(key, t);
+		}
+		List<String> prettyPrint = prettyPrinter.prettyPrint();
+		for (String line : prettyPrint) {
+			LOG.debug(line);
 		}
     }
 

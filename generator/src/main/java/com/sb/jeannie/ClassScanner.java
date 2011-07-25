@@ -81,7 +81,12 @@ public class ClassScanner {
 			String description = annotation.type();
 			String [] extensions = annotation.extensions();
 			ParserSupport parser = (ParserSupport)instantiate(parserName, parserClass);
-			LOG.debug("registering: {} (extensions: {}, prio: " + parser.getPrio() + ")", description, extensions);
+			if (extensions.length > 0) {
+				LOG.debug("registering: {} (extensions: {}, prio: " + parser.getPrio() + ")", description, extensions);
+			}
+			else {
+				LOG.debug("registering: {} (prio: " + parser.getPrio() + ")", description);
+			}
 			parsers.add(parser);
 		}
 		

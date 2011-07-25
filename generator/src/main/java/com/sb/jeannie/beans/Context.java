@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sb.jeannie.Jeannie;
+import com.sb.jeannie.ProcessorHandler;
+import com.sb.jeannie.Utils;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
@@ -17,8 +18,6 @@ public enum Context {
 	inst;
 	
 	private static final long serialVersionUID = -5206561164460867913L;
-	
-	private static final String NL = System.getProperty("line.separator");
 	
 	public static final String INDEX = "index";
 	public static final String ALL = "all";
@@ -87,14 +86,14 @@ public enum Context {
     	for (String key : list) {
     		String t = String.format("%-" + ml + "s = %s", key, index.get(key));
     		String a = additionalInfo(context, key);
-			sb.append(t + " " + a + NL);
+			sb.append(t + " " + a + Utils.NL);
 		}
     	
-		sb.append(NL);
-		sb.append("Preprocessors:" + NL);
+		sb.append(Utils.NL);
+		sb.append("Preprocessors:" + Utils.NL);
     	handleProcessors(sb, context, preprocessors, ml);
-		sb.append(NL);
-		sb.append("Postprocessors:" + NL);
+		sb.append(Utils.NL);
+		sb.append("Postprocessors:" + Utils.NL);
     	handleProcessors(sb, context, postprocessors, ml);
     	return sb.toString();
 	}
@@ -108,15 +107,15 @@ public enum Context {
 		Set<String> scriptletSet = processors.keySet();
     	for (String key : scriptletSet) {
     		String name = key;
-    		if (key.endsWith(Jeannie.GROOVY_SUFFIX)) {
+    		if (key.endsWith(ProcessorHandler.GROOVY_SUFFIX)) {
         		name = key.replaceAll(".groovy$", "");
         		String t = String.format("%-" + ml + "s is a %s", name, processors.get(key));
-    			sb.append(t + " (groovy scriptlet: '" + key + "')" + NL);
+    			sb.append(t + " (groovy scriptlet: '" + key + "')" + Utils.NL);
     		}
     		else {
     			ProcessorBase p = (ProcessorBase)processors.get(key);
         		String t = String.format("%-" + ml + "s %s", name, p.getDescription());
-    			sb.append(t + NL);
+    			sb.append(t + Utils.NL);
     		}
     		context.put(name, processors.get(key));
 		}

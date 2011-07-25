@@ -1,22 +1,14 @@
 package com.sb.jeannie;
 
-import groovy.lang.GroovyClassLoader;
-
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.codehaus.groovy.control.CompilationUnit;
-import org.codehaus.groovy.control.CompilerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
@@ -24,9 +16,6 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.misc.ErrorBuffer;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
@@ -34,9 +23,7 @@ import com.sb.jeannie.beans.Module;
 import com.sb.jeannie.beans.TemplateProperties;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
-import com.sb.jeannie.interfaces.ProcessorBase;
 import com.sb.jeannie.parsers.ParserSupport;
-import com.sb.jeannie.processors.DefaultPostprocessor;
 import com.sb.jeannie.renderers.StringRenderer;
 import com.sb.jeannie.utils.TimeTaker;
 
@@ -54,21 +41,18 @@ import com.sb.jeannie.utils.TimeTaker;
 public class Jeannie {
 	private static final Logger LOG = LoggerFactory.getLogger(Jeannie.class);
 	
-	public static final String GROOVY_SUFFIX = ".groovy";
 	private static final String STG_SUFFIX = "stg";
 	private static final String CONTEXT = "context";
 	
 	private List<File> allfiles;
 	private Map<File, String> fileTypes;
-	private Map<String, ProcessorBase> scriptlets;
-	private Map<String, Preprocessor> preprocessors;
-	private Map<String, Postprocessor> postprocessors;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
 	private File modulelocation;
 	private File outputlocation;
 	private File inputlocation;
 	private ClassScanner scanner;
+	private ProcessorHandler processorHandler;
 	
 	public Jeannie(
 			String modulelocation, 
@@ -103,8 +87,8 @@ public class Jeannie {
 			this.module = new Module(modulelocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
+			parseAll();
 			JeannieProperties.log();
-			handleParsers();
 		}
 		finally {
 			LOG.info("init(): {}", tt);
@@ -132,7 +116,7 @@ public class Jeannie {
 						parser.init();
 					}
 					this.allfiles = Utils.allfiles(inputlocation);
-					handleParsers();
+					parseAll();
 					generate();
 				}
 				if (modulefiles.hasChangedFiles()) {
@@ -165,9 +149,6 @@ public class Jeannie {
 		return true;
 	}
 	
-	// 1-n
-	// n->n
-	// n-1
 	public void generate() {
 		TimeTaker tt = new TimeTaker();
 		try {
@@ -175,7 +156,12 @@ public class Jeannie {
 				LOG.info("no files changed, generation skipped!");
 				return;
 			}
-			handleProcessors();
+			processorHandler = new ProcessorHandler(module, scanner);
+			processorHandler.handleProcessors();
+			
+			Map<String, Preprocessor> preprocessors = processorHandler.getPreprocessors();
+			Map<String, Postprocessor> postprocessors = processorHandler.getPostprocessors();
+
 			rebuildContext();
 			LOG.info("\n{}", Context.index(preprocessors, postprocessors));
 
@@ -238,7 +224,7 @@ public class Jeannie {
 
 	private void handleWrite(TemplateProperties tp, String result) {
 		try {
-			Postprocessor postprocessor = fetchPostprocessor(tp.getPostprocessor());
+			Postprocessor postprocessor = processorHandler.fetchPostprocessor(tp.getPostprocessor());
 			String outputdir = tp.getOutputdir();
 			String outputname = tp.getOutputname();
 			Boolean dontgenerate = tp.isDontgenerate();
@@ -287,20 +273,11 @@ public class Jeannie {
 		Context.put(Context.OBJECTMAP, allInputObjects);
 		Context.put(Context.PARSERS, scanner.getParsers());
 		//Context.put(Context.PROPERTIES, null);
-		Context.put(Context.SCRIPTLETS, scriptlets);
+		Context.put(Context.SCRIPTLETS, processorHandler.getScriptlets());
 		Context.put(Context.SYSTEM_PROPERTIES, sysprops);
 	}
 
-	private void handleProcessors() {
-		resetProcessors();
-		compileScriptlets();
-		List<ProcessorBase> processors = scanner.getProcessors();
-		for (ProcessorBase processor : processors) {
-			identifyProcessor(processor.getName(), processor);
-		}
-	}
-
-	private void handleParsers() {
+	private void parseAll() {
 		List<ParserSupport> parsers = scanner.getParsers();
 
 		for (File file : allfiles) {
@@ -318,137 +295,6 @@ public class Jeannie {
 		}
 		for (ParserSupport parser : parsers) {
 			parser.parseFiles(allInputObjects, fileTypes, dl);
-		}
-	}
-
-	private void resetProcessors() {
-		scriptlets = new HashMap<String, ProcessorBase>();
-		preprocessors = new HashMap<String, Preprocessor>();
-		postprocessors = new HashMap<String, Postprocessor>();
-	}
-	
-	/**
-	 * This compiles scriptlets into java class files and extends
-	 * the classpath to include those classes. This method can be
-	 * called repeatedly, as it recreates a classloader each time,
-	 * ensuring that new/changed classes are provided to the
-	 * generator.
-	 * 
-	 * This method has the usual groovy overhead when a module is
-	 * run for the first time. after that, if there are no scriptlet
-	 * changes, it should be fairly fast,.
-	 */
-	private void compileScriptlets() {
-		try {
-			File target = new File("/tmp/ttt");
-
-			Map<String, String> classMap = null;
-			File classmapFile = new File(target, "classmap");
-			if (classmapFile.exists()) {
-				Gson gson = new Gson();
-				FileReader fr = new FileReader(classmapFile);
-		        classMap = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
-				LOG.debug("processors found: {}", classMap.keySet());
-			}
-			
-			if (classMap == null || 
-				ChangeChecker.newerThan(module.getScriptlets(), target)) {
-				LOG.debug("recompiling scriptlets...");
-				Utils.deleteAll(target);
-				CompilerConfiguration cc = new CompilerConfiguration();
-				cc.setDebug(true);
-				cc.setTargetDirectory(target);
-				cc.setVerbose(true);
-				
-				ClassLoader parent = Jeannie.class.getClassLoader();
-				GroovyClassLoader gcl = new GroovyClassLoader(parent);
-								
-				List<File> scriptlets = Utils.allfiles(module.getScriptlets(), GROOVY_SUFFIX);
-				classMap = new HashMap<String, String>();
-				for (File file : scriptlets) {
-					LOG.debug("   * {}", file.getName());
-					CompilationUnit cu = new CompilationUnit();
-					cu.addSource(new File(module.getScriptlets(), file.getName()));
-					cu.setConfiguration(cc);
-					cu.configure(cc);
-					cu.setClassLoader(gcl);
-					cu.compile();
-					if (cu.getClasses().size() != 1) {
-						LOG.error("a scriptlet must only have one class!");
-						LOG.error("will use first class only.");
-					}
-					String scriptletClassName = cu.getFirstClassNode().getName();
-					LOG.debug("    ---> {}", scriptletClassName);
-					classMap.put(file.getName(), scriptletClassName);
-				}
-				
-				// we want to reference scriptlets by their script name
-				// which ideally should be the same as the class name
-				// but in case it isn't -> let's store a map which
-				// contains the association.
-				Gson gson = new GsonBuilder().setPrettyPrinting().create();
-				String json = gson.toJson(classMap);
-				FileWriter fw = new FileWriter(classmapFile);
-				fw.append(json);
-				fw.flush();
-				fw.close();
-			}
-			
-			URLClassLoader parent = (URLClassLoader)Jeannie.class.getClassLoader();
-			URLClassLoader rl = new URLClassLoader(new URL[] {}, parent);
-
-			ClassPathExtender.addURL(
-					rl,
-					target.toURI().toURL());
-			Collection<String> keys = classMap.keySet();
-			for (String scriptletName : keys) {
-				String scriptletClassName = classMap.get(scriptletName);
-				Class<?> scriptletClass = rl.loadClass(scriptletClassName);
-				
-				Object processor = scriptletClass.newInstance();
-				identifyProcessor(scriptletName, processor);
-			}
-		}
-		catch (Exception e) {
-			LOG.error("exception caught: ", e);
-		}
-	}
-
-	private Postprocessor fetchPostprocessor(String processor) {
-		for (Postprocessor postprocessor : postprocessors.values()) {
-			if (postprocessor.getName().equals(processor)) {
-				return postprocessor;
-			}
-		}
-		return new DefaultPostprocessor();
-	}
-	
-	/**
-	 * takes a processor and puts it into the correspondng list.
-	 * 
-	 * @param scriptletName
-	 * @param processor
-	 */
-	private void identifyProcessor(String scriptletName, Object processor) {
-		if (processor instanceof Preprocessor) {
-			Preprocessor p = (Preprocessor)processor;
-			LOG.debug("script '{}' is a {}", scriptletName, Preprocessor.class.getSimpleName());
-			preprocessors.put(scriptletName, p);
-			scriptlets.put(scriptletName, p);
-		}
-		else if (processor instanceof Postprocessor) {
-			Postprocessor p = (Postprocessor)processor;
-			LOG.debug("script '{}' is a {}", scriptletName, Postprocessor.class.getSimpleName());
-			postprocessors.put(scriptletName, p);
-			scriptlets.put(scriptletName, p);
-		}
-		else {
-			LOG.error("{} doesn't implement proper interface", scriptletName);
-			LOG.error(" --> ignored!");
-			LOG.error("HINT: make sure that your scriptlets implement");
-			LOG.error("      one of the following interfaces:");
-			LOG.error("         - " + Preprocessor.class.getName());
-			LOG.error("         - " + Postprocessor.class.getName());
 		}
 	}
 }

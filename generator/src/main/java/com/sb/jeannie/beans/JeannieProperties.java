@@ -3,10 +3,15 @@ package com.sb.jeannie.beans;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author alvi
  */
 public class JeannieProperties extends BeanSupport {
+	private static final Logger LOG = LoggerFactory.getLogger(JeannieProperties.class);
+	
     public static final String GLOBAL_ENCODING = "globalEncoding";
     public static final String GLOBAL_SKIP_UPTODATE_CHECK = "globalSkipUptodateCheck";
     public static final String GLOBAL_VERBOSE = "globalVerbose";
@@ -63,7 +68,7 @@ public class JeannieProperties extends BeanSupport {
 	}
 
 	public static void log() {
-		log(PROPERTY_MAP, props);
+		log(LOG, PROPERTY_MAP, props);
 	}
 	
     public static String getGlobalEncoding() {

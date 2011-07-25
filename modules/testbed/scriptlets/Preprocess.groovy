@@ -11,4 +11,3 @@ public class Preprocessor extends DefaultPreprocessor implements Preprocessor {
         return getContext().get("current").name + "Entity";
     }
 }
-

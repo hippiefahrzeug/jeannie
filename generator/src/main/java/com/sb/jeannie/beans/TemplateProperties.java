@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 
@@ -30,6 +32,8 @@ import org.stringtemplate.v4.STGroup;
  * @author alvi
  */
 public class TemplateProperties extends BeanSupport {
+	private static final Logger LOG = LoggerFactory.getLogger(TemplateProperties.class);
+	
 	public static final String MAIN = "main";
 	private static final String EXTENSION = "extension";
 	private static final String TYPE = "type";
@@ -94,7 +98,7 @@ public class TemplateProperties extends BeanSupport {
 	}
 	
 	public void log() {
-		log(PROPERTY_MAP, props);
+		log(LOG, PROPERTY_MAP, props);
 	}
 /*
 	public String getPreprocessor() {
