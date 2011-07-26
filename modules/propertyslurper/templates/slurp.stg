@@ -4,6 +4,7 @@ properties ::= [
 ]
 
 main() ::= <<
+package com.testes.huhu;
 
 /**
  * note: $context.info.warn$
@@ -11,7 +12,7 @@ main() ::= <<
  * generated at: $context.info.time$
  * template: $context.currenttemplate$
  */
-public class $context.Slurp.classname$ {
+public class $context.Slurp.classname$$context.counter$ {
     $context.Slurp.model:declarations(); separator="\n"$
 
     private static Map<String, String> PROPERTY_MAP;

@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-import org.stringtemplate.v4.misc.ErrorBuffer;
 
 import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
@@ -181,7 +180,8 @@ public class Jeannie {
 			for (File file : allfiles) {
 				String fileType = fileTypes.get(file);
 				String extension = Utils.fileExtension(file);
-				Context.put(Context.CURRENT, allInputObjects.get(file));
+				Object current = allInputObjects.get(file);
+				Context.put(Context.CURRENT, current);
 				Context.put(Context.CURRENT_FILE, file);
 				for (STGroup stg : groups) {
 					Context.put(Context.CURRENT_TEMPLATE, stg.getName());
@@ -205,6 +205,11 @@ public class Jeannie {
 						if (gf != null) {
 							generatefor.addAll(gf);
 						}
+					}
+					// if there are no generatefor objects,
+					// we fall back to the default (1-1 generation)
+					if (generatefor.size() == 0) {
+						generatefor.add(current);
 					}
 
 					int n = 0;

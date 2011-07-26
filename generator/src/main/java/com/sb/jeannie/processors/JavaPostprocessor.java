@@ -17,7 +17,8 @@ import com.thoughtworks.qdox.parser.ParseException;
 
 @Processor
 public class JavaPostprocessor extends DefaultPostprocessor implements Postprocessor {
-    private final static Logger LOG = LoggerFactory.getLogger(JavaPostprocessor.class);
+    private static final String SRCDIR = "src";
+	private final static Logger LOG = LoggerFactory.getLogger(JavaPostprocessor.class);
 	private JavaDocBuilder builder;
 	private JavaClass clazz;
 	
@@ -34,7 +35,8 @@ public class JavaPostprocessor extends DefaultPostprocessor implements Postproce
 		if (clazz == null) {
 			return super.getOutputdir();
 		}
-		String dir = clazz.getPackageName().replace('.', File.separatorChar);
+		char s = File.separatorChar;
+		String dir =  SRCDIR + s + clazz.getPackageName().replace('.', s);
 		return dir;
 	}
 

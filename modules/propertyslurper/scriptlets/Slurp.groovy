@@ -3,11 +3,10 @@ import com.sb.jeannie.processors.DefaultPreprocessor;
 
 class Slurp extends DefaultPreprocessor {
 
-/*
     public List<Object> generatefor() {
         return [1,2,3,4,5,6,7,8,9]
     }
-*/
+
     def upper = { it.toUpperCase() }
 
     def getModel() {
@@ -15,6 +14,7 @@ class Slurp extends DefaultPreprocessor {
        getContext().getCurrent().collect() { 
          smap.add([it.get(0).toUpperCase().trim(), toCamelCase(it.get(0).toLowerCase().trim()), it.get(2).trim()])
        }
+
        return smap
     }
 
