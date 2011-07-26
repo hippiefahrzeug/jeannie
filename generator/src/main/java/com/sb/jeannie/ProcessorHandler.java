@@ -174,7 +174,7 @@ public class ProcessorHandler {
 		}
 		else if (processor instanceof Postprocessor) {
 			Postprocessor p = (Postprocessor)processor;
-			pp.add(scriptletName, Postprocessor.class.getSimpleName());
+			pp.add(scriptletName, "is a " + Postprocessor.class.getSimpleName());
 			postprocessors.put(scriptletName, p);
 			scriptlets.put(scriptletName, p);
 		}

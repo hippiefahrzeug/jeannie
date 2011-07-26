@@ -1,13 +1,9 @@
 properties ::= [
     "type" : "csv",
-    "foreach" : ""
+    "postprocessor" : "JavaPostprocessor"
 ]
 
 main() ::= <<
-
-huh $last(context.current)$
--------------
-huh $last(context.iterator)$
 
 /**
  * note: $context.info.warn$

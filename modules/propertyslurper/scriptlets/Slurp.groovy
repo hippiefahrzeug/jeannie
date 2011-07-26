@@ -3,10 +3,11 @@ import com.sb.jeannie.processors.DefaultPreprocessor;
 
 class Slurp extends DefaultPreprocessor {
 
+/*
     public List<Object> generatefor() {
-        return [1,2,3,4,5,6,7,8,9];
+        return [1,2,3,4,5,6,7,8,9]
     }
-
+*/
     def upper = { it.toUpperCase() }
 
     def getModel() {
@@ -40,6 +41,6 @@ class Slurp extends DefaultPreprocessor {
     }
 
     def getClassname() {
-        return getContext().get("currentfile").getName().replace(".csv", "");
+        return getContext().getCurrentfile().getName().replace(".csv", "");
     }
 }
