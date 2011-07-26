@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -178,7 +179,6 @@ public class Jeannie {
 			}
 
 			for (File file : allfiles) {
-				rebuildContext();
 				String fileType = fileTypes.get(file);
 				String extension = Utils.fileExtension(file);
 				Context.put(Context.CURRENT, allInputObjects.get(file));
@@ -198,23 +198,39 @@ public class Jeannie {
 						continue;
 					}
 
+					HashSet<Object> generatefor = new HashSet<Object>();
 					for (Preprocessor preprocessor : preprocessors.values()) {
 						preprocessor.init(Context.inst);
+						List<Object> gf = preprocessor.generatefor();
+						if (gf != null) {
+							generatefor.addAll(gf);
+						}
 					}
-					
-					Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
-					TemplateProperties tp = new TemplateProperties(stg, properties);
-					
-					if (
-						(tp.getType() == null || fileType.equals(tp.getType())) &&
-						(tp.getExtension() == null || extension.equals(tp.getExtension()))
-					) {
-						String result = st.render();
-						LOG.error(stg.getListener().toString());
-						Context.put(Context.RESULT, result);
-						handleWrite(tp, result);
+
+					int n = 0;
+					for (Object iterator : generatefor) {
+						Context.put(Context.ITERATOR, iterator);
+						Context.put(Context.COUNTER, Integer.valueOf(n));
+						
+						Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
+						TemplateProperties tp = new TemplateProperties(stg, properties);
+						
+						if (
+							(tp.getType() == null || fileType.equals(tp.getType())) &&
+							(tp.getExtension() == null || extension.equals(tp.getExtension()))
+						) {
+							String result = st.render();
+							LOG.error(stg.getListener().toString());
+							Context.put(Context.RESULT, result);
+							handleWrite(tp, result);
+						}
+						n++;
 					}
 				}
+				// rebuild the context for next file
+				// uncommented: probably not necessary
+				// (it may be as there may be some polution...)
+				// rebuildContext();
 			}
 		}
 		finally {

@@ -61,6 +61,7 @@ public class Info {
 
 	public String toString() {
 		return "Info [version=" + version + ", time=" + time
+		        + ", warn=" + getWarn()
 				+ ", inputlocation=" + inputlocation + ", outputlocation="
 				+ outputlocation + "]";
 	}

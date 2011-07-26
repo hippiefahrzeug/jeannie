@@ -1,5 +1,6 @@
 package com.sb.jeannie.beans;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,8 @@ public enum Context {
 	public static final String ALL_FILES = "allfiles";
 	public static final String CURRENT = "current";
 	public static final String CURRENT_FILE = "currentfile";
+	public static final String ITERATOR= "iterator";
+	public static final String COUNTER= "counter";
 	public static final String PARSERS = "parsers";
 	public static final String SCRIPTLETS = "scriptlets";
 	public static final String PROPERTIES = "properties";
@@ -45,6 +48,8 @@ public enum Context {
     	index.put(ALL_FILES, "all input files");
     	index.put(CURRENT, "the current object");
     	index.put(CURRENT_FILE, "the current file");
+    	index.put(ITERATOR, "iterator object from the generatefor list");
+    	index.put(COUNTER, "counts iterated object from the generatefor list");
     	index.put(PARSERS, "list of all parsers");
     	index.put(SCRIPTLETS, "list of all scriptlets");
     	index.put(PROPERTIES, "map of properties");
@@ -135,6 +140,11 @@ public enum Context {
 		}
 		
 		Object object = context.get(key);
+		
+		if (CURRENT.equals(key) || ITERATOR.equals(key)) {
+			return String.format("(type: %s)", object.getClass().getName());
+		}
+
 		if (object instanceof Map) {
 			Map<?, ?> m = (Map<?, ?>)object;
 			return String.format("(%s entries)", m.size());
@@ -145,7 +155,8 @@ public enum Context {
 			return String.format("(%s entries)", l.size());
 		}
 		
-		if (object instanceof Collection) {
+		if (object instanceof Collection
+		) {
 			Collection<?> c = (Collection<?>)object;
 			return String.format("(%s entries)", c.size());
 		}
@@ -157,8 +168,8 @@ public enum Context {
 		return String.format("(type: %s)", object.getClass().getName());
     }
     
-    public Object getIndex() {
-        return context.get(INDEX);
+    public String getIndex() {
+        return (String)context.get(INDEX);
     }
     
     public Object getAll() {
@@ -173,8 +184,16 @@ public enum Context {
         return context.get(CURRENT);
     }
     
-    public Object getCurrentfile() {
-        return context.get(CURRENT_FILE);
+    public File getCurrentfile() {
+        return (File)context.get(CURRENT_FILE);
+    }
+    
+    public Object getIterator() {
+        return context.get(ITERATOR);
+    }
+    
+    public Integer getCounter() {
+        return (Integer)context.get(COUNTER);
     }
     
     public Object getParsers() {
@@ -193,12 +212,12 @@ public enum Context {
         return context.get(SYSTEM_PROPERTIES);
     }
     
-    public Object getInfo() {
-        return context.get(INFO);
+    public Info getInfo() {
+        return (Info)context.get(INFO);
     }
     
-    public Object getCurrenttemplate() {
-        return context.get(CURRENT_TEMPLATE);
+    public String getCurrenttemplate() {
+        return (String)context.get(CURRENT_TEMPLATE);
     }
     
     public Object getObjectmap() {

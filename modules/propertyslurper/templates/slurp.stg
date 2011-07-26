@@ -1,10 +1,20 @@
 properties ::= [
-    "type" :"csv",
-    "" :""
+    "type" : "csv",
+    "foreach" : ""
 ]
 
 main() ::= <<
 
+huh $last(context.current)$
+-------------
+huh $last(context.iterator)$
+
+/**
+ * note: $context.info.warn$
+ * generator: v$context.info.version$
+ * generated at: $context.info.time$
+ * template: $context.currenttemplate$
+ */
 public class $context.Slurp.classname$ {
     $context.Slurp.model:declarations(); separator="\n"$
 

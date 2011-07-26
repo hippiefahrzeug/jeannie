@@ -3,6 +3,7 @@ package com.sb.jeannie.processors;
 import java.io.File;
 
 import com.sb.jeannie.annotations.Processor;
+import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.interfaces.Postprocessor;
 
 @Processor
@@ -17,8 +18,14 @@ public class DefaultPostprocessor extends DefaultProcessor implements Postproces
 	}
 
 	public String getOutputname() {
-		File f = (File)getContext().getCurrentfile();
-		return f.getName();
+		Context context = getContext();
+		Integer counter = context.getCounter();
+		File f = context.getCurrentfile();
+		String appendix = "";
+		if (counter > 0) {
+			appendix =  "_" + counter;
+		}
+		return f.getName() + appendix;
 	}
 
 	public Boolean getDongenerate() {
