@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sb.jeannie.annotations.Parser;
 
-@Parser(type="csv", extensions={"csv"}, prio=1)
+@Parser(type="jar", extensions={"jar"}, prio=1)
 public class JarParser extends ParserSupport {
     private final static Logger LOG = LoggerFactory.getLogger(JarParser.class);
 	
