@@ -151,6 +151,7 @@ public class Jeannie {
 	
 	public void generate() {
 		TimeTaker tt = new TimeTaker();
+		int generated = 0;
 		try {
 			if (isUpToDate()) {
 				LOG.info("no files changed, generation skipped!");
@@ -168,35 +169,42 @@ public class Jeannie {
 			List<STGroup> groups = new ArrayList<STGroup>();
 			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
 			for (File template : templfiles) {
-				STGroupFile stgf = new STGroupFile(
+				STGroupFile stg = new STGroupFile(
 						template.getAbsolutePath(), 
 						JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
 						JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
 				);
-				stgf.setListener(new ErrorBuffer());
-				groups.add(stgf);
+				
+				stg.registerRenderer(String.class, new StringRenderer());
+				stg.setListener(new STErrors());
+				stg.defineDictionary(CONTEXT, Context.inst.getContext());
+
+				groups.add(stg);
 			}
 
-			for (File file : allfiles) {
-				String fileType = fileTypes.get(file);
-				String extension = Utils.fileExtension(file);
-				Object current = allInputObjects.get(file);
-				Context.put(Context.CURRENT, current);
-				Context.put(Context.CURRENT_FILE, file);
-				for (STGroup stg : groups) {
-					Context.put(Context.CURRENT_TEMPLATE, stg.getName());
+			for (STGroup stg : groups) {
+				ST st = stg.getInstanceOf(TemplateProperties.MAIN);
+				if (st == null) {
+					LOG.error("no 'main' template defined!");
+					LOG.error("HINT: make sure that your template group contains");
+					LOG.error("      a template named 'main'.");
+					continue;
+				}
+
+				Context.put(Context.CURRENT_TEMPLATE, stg.getName());
+				
+				Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
+				TemplateProperties tp = new TemplateProperties(null, properties);
+				boolean single = Boolean.parseBoolean(tp.getSingleoutput());
+				
+				for (File file : allfiles) {
+					String fileType = fileTypes.get(file);
+					String extension = Utils.fileExtension(file);
+					
+					Object current = allInputObjects.get(file);
+					Context.put(Context.CURRENT, current);
+					Context.put(Context.CURRENT_FILE, file);
 					Context.put(Context.INDEX, Context.index(preprocessors, postprocessors));
-					
-					stg.defineDictionary(CONTEXT, Context.inst.getContext());
-					stg.registerRenderer(String.class, new StringRenderer());
-					
-					ST st = stg.getInstanceOf(TemplateProperties.MAIN);
-					if (st == null) {
-						LOG.error("no 'main' template defined!");
-						LOG.error("HINT: make sure that your template group contains");
-						LOG.error("      a template named 'main'.");
-						continue;
-					}
 
 					HashSet<Object> generatefor = new HashSet<Object>();
 					for (Preprocessor preprocessor : preprocessors.values()) {
@@ -206,6 +214,18 @@ public class Jeannie {
 							generatefor.addAll(gf);
 						}
 					}
+					
+					// this should happen within the generatefor loop
+					// so that ITERATOR and COUNTER could be used as
+					// well. but this would be quite expensive.
+					tp.handleTemplates(stg);
+					boolean isType = (tp.getType() == null || fileType.equals(tp.getType()));
+					boolean isExtension = (tp.getExtension() == null || extension.equals(tp.getExtension()));
+					
+					if (!isType || !isExtension) {
+						continue;
+					}
+					
 					// if there are no generatefor objects,
 					// we fall back to the default (1-1 generation)
 					if (generatefor.size() == 0) {
@@ -216,20 +236,17 @@ public class Jeannie {
 					for (Object iterator : generatefor) {
 						Context.put(Context.ITERATOR, iterator);
 						Context.put(Context.COUNTER, Integer.valueOf(n));
-						
-						Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
-						TemplateProperties tp = new TemplateProperties(stg, properties);
-						
-						if (
-							(tp.getType() == null || fileType.equals(tp.getType())) &&
-							(tp.getExtension() == null || extension.equals(tp.getExtension()))
-						) {
-							String result = st.render();
-							LOG.error(stg.getListener().toString());
-							Context.put(Context.RESULT, result);
-							handleWrite(tp, result);
-						}
+						String result = st.render();
+						Context.put(Context.RESULT, result);
+						handleWrite(tp, result);
 						n++;
+						if (single) {
+							break;
+						}
+					}
+					generated += n;
+					if (single) {
+						break;
 					}
 				}
 				// rebuild the context for next file
@@ -239,7 +256,7 @@ public class Jeannie {
 			}
 		}
 		finally {
-			LOG.info("generate(): {}", tt);
+			LOG.info("generated {} files, {}", generated, tt);
 		}
 	}
 

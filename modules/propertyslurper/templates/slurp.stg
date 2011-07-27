@@ -1,6 +1,7 @@
 properties ::= [
     "type" : "csv",
-    "postprocessor" : "JavaPostprocessor"
+    "postprocessor" : "JavaPostprocessor",
+    "singleoutput" : "true"
 ]
 
 main() ::= <<

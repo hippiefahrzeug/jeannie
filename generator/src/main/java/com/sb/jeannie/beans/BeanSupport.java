@@ -33,14 +33,14 @@ public abstract class BeanSupport {
 	 * takes a map of properties and uses the ones we're interested
 	 * in and makes those available through getters.
 	 */
-	public void handleProperties(Map<String, String> propertyMap, Map<String, Object> properties) {
+	protected void handleProperties(Map<String, String> propertyMap, Map<String, Object> properties) {
 		if (properties == null) {
 			return;
 		}
 		Set<String> keys = properties.keySet();
 		for (String key : keys) {
 			if (propertyMap.containsKey(key)) {
-				String val = (String)properties.get(key);
+				String val = "" + properties.get(key);
 				getProps().put(key, val);
 			}
 		}

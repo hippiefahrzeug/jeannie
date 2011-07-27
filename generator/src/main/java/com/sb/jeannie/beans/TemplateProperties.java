@@ -35,8 +35,9 @@ public class TemplateProperties extends BeanSupport {
 	private static final Logger LOG = LoggerFactory.getLogger(TemplateProperties.class);
 	
 	public static final String MAIN = "main";
-	private static final String EXTENSION = "extension";
 	private static final String TYPE = "type";
+	private static final String EXTENSION = "extension";
+	private static final String SINGLEOUTPUT = "singleoutput";
 	private static final String OUTPUTNAME = "outputname";
 	private static final String OUTPUTDIR = "outputdir";
 	// private static final String PREPROCESSOR = "preprocessor";
@@ -49,8 +50,9 @@ public class TemplateProperties extends BeanSupport {
 	static {
 		PROPERTY_MAP = new HashMap<String, String>();
 		PROPERTY_MAP.put(MAIN, "the main template");
-		PROPERTY_MAP.put(EXTENSION, "extension of a file");
 		PROPERTY_MAP.put(TYPE, "type of the parser of the current object");
+		PROPERTY_MAP.put(EXTENSION, "extension of a file");
+		PROPERTY_MAP.put(SINGLEOUTPUT, "if true, only one file is generated");
 		PROPERTY_MAP.put(OUTPUTNAME, "name of the generated file");
 		PROPERTY_MAP.put(OUTPUTDIR, "directory of the generated file");
 		// PROPERTY_MAP.put(PREPROCESSOR, "desired pre processor");
@@ -63,7 +65,15 @@ public class TemplateProperties extends BeanSupport {
 			Map<String, Object> properties
 	) {
 		props = new HashMap<String, String>();
+		handleTemplates(stg);
+		handleProperties(properties);
+	}
+	
+	public void handleTemplates(STGroup stg) {
 		handleTemplates(PROPERTY_MAP, stg);
+	}
+	
+	public void handleProperties(Map<String, Object> properties) {
 		handleProperties(PROPERTY_MAP, properties);
 	}
 
@@ -72,10 +82,13 @@ public class TemplateProperties extends BeanSupport {
 	 * renders those available. These templates's values will then
 	 * replace the property value. The key is the template name.
 	 */
-	public void handleTemplates(
+	private void handleTemplates(
 			Map<String, String> propertyMap, 
 			STGroup stg
 	) {
+		if (stg == null) {
+			return;
+		}
 		Set<String> keys = propertyMap.keySet();
 		for (String key : keys) {
 			ST st = stg.getInstanceOf(key);
@@ -117,12 +130,16 @@ public class TemplateProperties extends BeanSupport {
 		return props.get(OUTPUTNAME);
 	}
 
+	public String getType() {
+		return props.get(TYPE);
+	}
+
 	public String getExtension() {
 		return props.get(EXTENSION);
 	}
 	
-	public String getType() {
-		return props.get(TYPE);
+	public String getSingleoutput() {
+		return props.get(SINGLEOUTPUT);
 	}
 
 	public boolean isDontgenerate() {

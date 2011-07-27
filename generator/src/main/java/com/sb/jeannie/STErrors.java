@@ -11,8 +11,8 @@ import org.stringtemplate.v4.misc.STMessage;
 import org.stringtemplate.v4.misc.STNoSuchPropertyException;
 
 /** Used during tests to track all errors */
-public class ErrorBuffer implements STErrorListener {
-	private static final Logger LOG = LoggerFactory.getLogger(ErrorBuffer.class);
+public class STErrors implements STErrorListener {
+	private static final Logger LOG = LoggerFactory.getLogger(STErrors.class);
     public List<STMessage> errors = new ArrayList<STMessage>();
     
     public void compileTimeError(STMessage msg) {
@@ -32,11 +32,9 @@ public class ErrorBuffer implements STErrorListener {
         errors.add(msg);
     }
     
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
+    public void log() {
         for (STMessage m : errors) {
-            buf.append(m.toString()+Misc.newline);
+            LOG.error(m.toString());
         }
-        return buf.toString();
     }
 }
