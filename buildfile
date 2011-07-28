@@ -14,6 +14,8 @@ repositories.remote << "http://mavensync.zkoss.org/maven2"
 repositories.remote << "http://reflections.googlecode.com/svn/repo"
 repositories.remote << "http://repository.jboss.org/nexus/content/repositories/releases/"
 
+repositories.release_to = 'file://home/alvi/releases/jeannie'
+
 GEN_STRINGTEMPLATE = transitive('org.antlr:ST4:jar:4.0.4')
 GEN_YAML = 'org.yaml:snakeyaml:jar:1.8'
 GEN_GSON = 'com.google.code.gson:gson:jar:1.7.1'
