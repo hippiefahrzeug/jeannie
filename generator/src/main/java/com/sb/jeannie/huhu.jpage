@@ -36,6 +36,7 @@ com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
 		"/tmp/propertyslurper",
 		l
 );
+genie.generate();
 genie.looper();
 
 

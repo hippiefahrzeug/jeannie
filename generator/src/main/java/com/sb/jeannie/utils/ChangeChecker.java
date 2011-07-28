@@ -1,8 +1,10 @@
-package com.sb.jeannie;
+package com.sb.jeannie.utils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 
 /**
  * helper class that detect changes in files.
@@ -12,6 +14,15 @@ import java.util.List;
 public class ChangeChecker {
 	private List<File> files = new ArrayList<File>();
 	private long lastModified = 0;
+	private Set<String> ignore;
+	
+	/**
+	 * @param ignore set of file names that shall be ignored
+	 */
+	public ChangeChecker(File file, Set<String> ignore) {
+		this.ignore = ignore;
+		add(file);
+	}
 	
 	public ChangeChecker(File file) {
 		add(file);
@@ -26,7 +37,19 @@ public class ChangeChecker {
 	 * @param compareTo
 	 */
 	public static boolean newerThan(File compareFrom, File compareTo) {
-		ChangeChecker cc = new ChangeChecker(compareTo);
+		return newerThan(compareFrom, compareTo, null);
+	}
+	
+	/**
+	 * returns true if file compareFrom (or all files in compareFrom, if
+	 * it points to a directory) is newer than file compareTo (or newer
+	 * than any file in compareTo if it points to a directory)
+	 * 
+	 * @param compareFrom
+	 * @param compareTo
+	 */
+	public static boolean newerThan(File compareFrom, File compareTo, Set<String> ignore) {
+		ChangeChecker cc = new ChangeChecker(compareTo, ignore);
 		cc.hasChangedFiles();
 		cc.add(compareFrom);
 		return cc.hasChangedFiles();
@@ -48,7 +71,7 @@ public class ChangeChecker {
 			files.add(path);
 		}
 		else {
-			files.addAll(Utils.allfiles(path));
+			files.addAll(Utils.allfiles(path, ignore));
 		}
 	}
 	

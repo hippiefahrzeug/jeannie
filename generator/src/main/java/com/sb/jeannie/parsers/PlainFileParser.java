@@ -5,8 +5,8 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sb.jeannie.Utils;
 import com.sb.jeannie.annotations.Parser;
+import com.sb.jeannie.utils.Utils;
 
 @Parser(type="plain")
 public class PlainFileParser extends ParserSupport {

@@ -1,4 +1,4 @@
-package com.sb.jeannie;
+package com.sb.jeannie.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -14,6 +14,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -55,7 +56,7 @@ public class Utils {
     }
 
 	public static List<File> allfiles(File path) {
-		return allfiles(path, null);
+		return allfiles(path, (String)null);
 	}
 	
 	/**
@@ -72,20 +73,33 @@ public class Utils {
 	 */
 	public static List<File> allfiles(File path, String extension) {
 		ArrayList<File> files = new ArrayList<File>();
-		allfiles(files, path, extension);
+		allfiles(files, path, extension, null);
 		return files;
 	}
 	
-	private static void allfiles(List<File> files, File path, String extension) {
+	public static List<File> allfiles(File path, Set<String> ignore) {
+		ArrayList<File> files = new ArrayList<File>();
+		allfiles(files, path, null, ignore);
+		return files;
+	}
+
+	private static void allfiles(
+			List<File> files, 
+			File path, 
+			String extension,
+			Set<String> ignore
+	) {
 		if (!path.exists()) {
 			return;
 		}
-		
-		if (path.isDirectory()) {
+		else if (ignore != null && ignore.contains(path.getName())) {
+			return;
+		}
+		else if (path.isDirectory()) {
 			File[] listFiles = path.listFiles();
 			for (int i = 0; i < listFiles.length; i++) {
 				File file = listFiles[i];
-				allfiles(files, file, extension);
+				allfiles(files, file, extension, ignore);
 			}
 		}
 		else if (path.isFile()) {

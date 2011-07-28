@@ -3,7 +3,7 @@ package com.sb.jeannie.beans;
 import java.io.File;
 
 public class Output {
-	private static final String WORKINGDIR = "workingdir";
+	public static final String WORKINGDIR = ".jeannie-workingdir";
 	private static final String SCRIPTS = "scripts";
 	private static final String MODULE = "module";
 	private static final String REFLECTIONS = "module-reflections.xml";

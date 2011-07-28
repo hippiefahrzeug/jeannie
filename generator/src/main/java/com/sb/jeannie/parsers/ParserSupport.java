@@ -12,10 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sb.jeannie.KeyValuePrettyPrinter;
-import com.sb.jeannie.Utils;
 import com.sb.jeannie.annotations.Parser;
 import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.utils.TimeTaker;
+import com.sb.jeannie.utils.Utils;
 
 public abstract class ParserSupport {
     private final static Logger LOG = LoggerFactory.getLogger(ParserSupport.class);

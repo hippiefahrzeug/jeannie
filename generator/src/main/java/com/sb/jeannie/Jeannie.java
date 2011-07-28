@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,9 @@ import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.parsers.ParserSupport;
 import com.sb.jeannie.renderers.StringRenderer;
+import com.sb.jeannie.utils.ChangeChecker;
 import com.sb.jeannie.utils.TimeTaker;
+import com.sb.jeannie.utils.Utils;
 
 /**
  * entry class for generation. Look no further.
@@ -62,6 +65,7 @@ public class Jeannie {
 	private Properties properties;
 	private ClassScanner scanner;
 	private ProcessorHandler processorHandler;
+	private Set<String> ignore;
 	
 	public Jeannie(
 			String modulelocation, 
@@ -132,6 +136,8 @@ public class Jeannie {
 			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner(module, output);
+			this.ignore = new HashSet<String>();
+			ignore.add(Output.WORKINGDIR);
 			JeannieProperties.log();
 		}
 		finally {
@@ -143,8 +149,8 @@ public class Jeannie {
 	 * never stops and calls generator whenever it detects a change.
 	 */
 	public void looper() {
-		ChangeChecker inputfiles = new ChangeChecker(inputlocation);
-		ChangeChecker modulefiles = new ChangeChecker(modulelocation);
+		ChangeChecker inputfiles = new ChangeChecker(inputlocation, ignore);
+		ChangeChecker modulefiles = new ChangeChecker(modulelocation, ignore);
 		for (int i = 0; i < propertyfiles.length; i++) {
 			modulefiles.add(propertyfiles[i]);
 		}
@@ -159,12 +165,12 @@ public class Jeannie {
 					int num = Utils.allfiles(inputlocation).size();
 					if (numInputfiles != num) {
 						numInputfiles = num;
-						inputfiles = new ChangeChecker(inputlocation);
+						inputfiles = new ChangeChecker(inputlocation, ignore);
 					}
 					num = Utils.allfiles(modulelocation).size();
 					if (numModulefiles != num) {
 						numModulefiles = num;
-						modulefiles = new ChangeChecker(modulelocation);
+						modulefiles = new ChangeChecker(modulelocation, ignore);
 					}
 				}
 				if (inputfiles.hasChangedFiles() ||
@@ -205,10 +211,10 @@ public class Jeannie {
 		if (!Boolean.parseBoolean(skip)) {
 			boolean u = false;
 			for (int i = 0; i < propertyfiles.length; i++) {
-				u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation);
+				u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation, ignore);
 			}
-			u = u || ChangeChecker.newerThan(inputlocation, outputlocation);
-			u = u || ChangeChecker.newerThan(modulelocation, outputlocation);
+			u = u || ChangeChecker.newerThan(inputlocation, outputlocation, ignore);
+			u = u || ChangeChecker.newerThan(modulelocation, outputlocation, ignore);
 			return !u;
 		}
 		return true;
