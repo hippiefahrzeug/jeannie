@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false" scan="true">
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-5level %property{"version"} %replace(%file){'.java', ''} %X{indent}%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>jeannie.log</file>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>%d{HH:mm:ss.SSS} %-5level %property{"version"} %replace(%file){'.java', ''} %X{indent}%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="com.sb.jeannie">
+    <level value="INFO" />
+  </logger>
+
+  <logger name="com.sb.jeannie.beans">
+    <level value="WARN" />
+  </logger>
+
+  <logger name="com.sb.jeannie.parsers">
+    <level value="INFO" />
+  </logger>
+
+  <logger name="org.reflections">
+    <level value="WARN" />
+  </logger>
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
+  </root>
+</configuration>

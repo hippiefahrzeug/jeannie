@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,6 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.sb.jeannie.annotations.Parser;
+import com.sb.jeannie.beans.Module;
+import com.sb.jeannie.beans.Output;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
@@ -36,43 +39,19 @@ public class ClassScanner {
 	
     private static final String EXTERNAL_PACKAGE = "external_package";
     
+    private Module module;
+    private Output output;
 	private List<ParserSupport> parsers = new ArrayList<ParserSupport>();
 	private List<ProcessorBase> processors = new ArrayList<ProcessorBase>();
 
-	public ClassScanner() {
+	public ClassScanner(Module module, Output output) {
+		this.module = module;
+		this.output = output;
 		init();
 	}
 	
     public void init() {
-		Predicate<String> filters = null;
-		if (System.getProperty(EXTERNAL_PACKAGE) != null) {
-			String userFilter = System.getProperty(EXTERNAL_PACKAGE);
-			filters = new FilterBuilder().include(userFilter).include(PARSERS_PKG).include(PROCESSORS_PKG);
-		}
-		else {
-			filters = new FilterBuilder().include(PARSERS_PKG).include(PROCESSORS_PKG);
-		}
-		
-		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-		configurationBuilder.filterInputsBy(filters);
-
-		ArrayList<URL> urls = new ArrayList<URL>();
-		ClassLoader [] classloaders = {
-				ClassScanner.class.getClassLoader(),
-				Thread.currentThread().getContextClassLoader()
-		};
-		
-		for (int i = 0; i < classloaders.length; i++) {
-			if (classloaders[i] instanceof URLClassLoader) {
-				urls.addAll(Arrays.asList(((URLClassLoader)classloaders[i]).getURLs()));
-			}
-			else {
-				throw new RuntimeException("classLoader is not an instanceof URLClassLoader");
-			}
-		}
-		
-		configurationBuilder.setUrls(urls);
-		Reflections reflections = new Reflections(configurationBuilder);
+    	Reflections reflections = fetchReflections();
 		
 		Set<String> parserset = reflections.getStore().getTypesAnnotatedWith(PARSER_ANNOTATION);
 		for (String parserName : parserset) {
@@ -105,6 +84,54 @@ public class ClassScanner {
 			LOG.debug("registering: {} (Processor)", processor.getName());
 			processors.add(processor);
 		}
+    }
+    
+    private Reflections fetchReflections() {
+    	if (module.getReflections().exists()) {
+    		return Reflections.collect().collect(module.getReflections());
+    	}
+    	
+		Predicate<String> filters = null;
+		if (System.getProperty(EXTERNAL_PACKAGE) != null) {
+			String userFilter = System.getProperty(EXTERNAL_PACKAGE);
+			filters = new FilterBuilder().include(userFilter).include(PARSERS_PKG).include(PROCESSORS_PKG);
+		}
+		else {
+			filters = new FilterBuilder().include(PARSERS_PKG).include(PROCESSORS_PKG);
+		}
+		
+		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+		configurationBuilder.filterInputsBy(filters);
+
+		List<URL> urls = new ArrayList<URL>();
+		ClassLoader [] classloaders = {
+				ClassScanner.class.getClassLoader(),
+				Thread.currentThread().getContextClassLoader()
+		};
+		
+		for (int i = 0; i < classloaders.length; i++) {
+			if (classloaders[i] instanceof URLClassLoader) {
+				urls.addAll(Arrays.asList(((URLClassLoader)classloaders[i]).getURLs()));
+			}
+			else {
+				throw new RuntimeException("classLoader is not an instanceof URLClassLoader");
+			}
+		}
+		
+		/* we should only scan those urls that may contain interesting classes
+		Set<URL> urls2 = new HashSet<URL>();
+		for (URL url : urls) {
+			if (url.toString().contains("jeannie")) {
+				LOG.info("url: {}", url);
+				urls2.add(url);
+			}
+		}
+		*/
+		
+		configurationBuilder.setUrls(urls);
+		Reflections reflections = new Reflections(configurationBuilder);
+		reflections.save(output.getReflections().getAbsolutePath());
+		return reflections;
     }
 
 	private Object instantiate(String clazzName, Class<?> clazz) {

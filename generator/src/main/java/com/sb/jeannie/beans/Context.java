@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sb.jeannie.ProcessorHandler;
-import com.sb.jeannie.Utils;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
@@ -18,6 +20,7 @@ import com.sb.jeannie.interfaces.ProcessorBase;
 public enum Context {
 	inst;
 	
+	private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 	private static final long serialVersionUID = -5206561164460867913L;
 	
 	public static final String INDEX = "index";
@@ -70,11 +73,33 @@ public enum Context {
     	context.put(key, value);
     }
     
+    public static void log(
+    		Map<String, Preprocessor> preprocessors,
+    		Map<String, Postprocessor> postprocessors
+    ) {
+    	List<String> lines = indexList(preprocessors, postprocessors);
+    	for (String line : lines) {
+			LOG.info("{}", line);
+		}
+    }
+    
     public static String index(
     		Map<String, Preprocessor> preprocessors,
     		Map<String, Postprocessor> postprocessors
     ) {
     	StringBuilder sb = new StringBuilder();
+    	List<String> lines = indexList(preprocessors, postprocessors);
+    	for (String line : lines) {
+    		sb.append(line);
+		}
+    	return sb.toString();
+    }
+    
+    public static List<String> indexList(
+    		Map<String, Preprocessor> preprocessors,
+    		Map<String, Postprocessor> postprocessors
+    ) {
+    	List<String> sb = new ArrayList<String>();
     	Set<String> keySet = index.keySet();
     	List<String> list = new ArrayList<String>(keySet);
     	Collections.sort(list);
@@ -91,20 +116,20 @@ public enum Context {
     	for (String key : list) {
     		String t = String.format("%-" + ml + "s = %s", key, index.get(key));
     		String a = additionalInfo(context, key);
-			sb.append(t + " " + a + Utils.NL);
+			sb.add(t + " " + a);
 		}
     	
-		sb.append(Utils.NL);
-		sb.append("Preprocessors:" + Utils.NL);
+		sb.add("");
+		sb.add("Preprocessors:");
     	handleProcessors(sb, context, preprocessors, ml);
-		sb.append(Utils.NL);
-		sb.append("Postprocessors:" + Utils.NL);
+		sb.add("");
+		sb.add("Postprocessors:");
     	handleProcessors(sb, context, postprocessors, ml);
-    	return sb.toString();
+    	return sb;
 	}
 
 	private static <T> void handleProcessors(
-			StringBuilder sb, 
+			List<String> sb,
 			Map<String, Object> context,
 			Map<String, T> processors, 
 			int ml
@@ -115,12 +140,12 @@ public enum Context {
     		if (key.endsWith(ProcessorHandler.GROOVY_SUFFIX)) {
         		name = key.replaceAll(".groovy$", "");
         		String t = String.format("%-" + ml + "s is a %s", name, processors.get(key));
-    			sb.append(t + " (groovy scriptlet: '" + key + "')" + Utils.NL);
+    			sb.add(t + " (groovy scriptlet: '" + key + "')");
     		}
     		else {
     			ProcessorBase p = (ProcessorBase)processors.get(key);
         		String t = String.format("%-" + ml + "s %s", name, p.getDescription());
-    			sb.append(t + Utils.NL);
+    			sb.add(t);
     		}
     		context.put(name, processors.get(key));
 		}

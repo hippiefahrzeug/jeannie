@@ -21,12 +21,15 @@ GEN_YAML = 'org.yaml:snakeyaml:jar:1.8'
 GEN_GSON = 'com.google.code.gson:gson:jar:1.7.1'
 GEN_QDOX = 'com.thoughtworks.qdox:qdox:jar:1.12'
 GEN_GROOVY = 'org.codehaus.groovy:groovy-all:jar:1.8.0'
-GEN_REFLECTIONS = transitive("org.reflections:reflections:jar:0.9.5-RC2")
+#GEN_REFLECTIONS = transitive("org.reflections:reflections:jar:0.9.5-RC2")
+GEN_REFLECTIONS = transitive("org.reflections:reflections:jar:0.9.5-RC2").reject { |a| a.group == 'ch.qos.logback' && a.id == 'logback-classic' }
 GEN_ANT = transitive("org.apache.ant:ant:jar:1.8.2")
 GEN_OPENCSV = 'net.sf.opencsv:opencsv:jar:2.1'
 
-SLF4J_API = 'org.slf4j:slf4j-api:jar:1.5.6'
-SLF4J = SLF4J_API
+#SLF4J_API = 'org.slf4j:slf4j-api:jar:1.6.1'
+SLF4J_IMPL = transitive('ch.qos.logback:logback-classic:jar:0.9.29')
+#SLF4J = SLF4J_API, SLF4J_IMPL
+SLF4J = SLF4J_IMPL
 COMMONS_LOGGING = 'commons-logging:commons-logging:jar:1.1.1'
 
 ALL_TEMPLATE_MODULES = 

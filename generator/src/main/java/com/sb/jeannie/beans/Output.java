@@ -6,17 +6,20 @@ public class Output {
 	private static final String WORKINGDIR = "workingdir";
 	private static final String SCRIPTS = "scripts";
 	private static final String MODULE = "module";
+	private static final String REFLECTIONS = "module-reflections.xml";
 
 	private File outputlocation;
 	private File workingdir;
 	private File scriptdir;
 	private File module;
+	private File reflections;
 
 	public Output(File outputlocation) {
 		this.outputlocation = outputlocation;
 		this.workingdir = new File(outputlocation, WORKINGDIR);
 		this.scriptdir = new File(workingdir, SCRIPTS);
 		this.module = new File(workingdir, MODULE);
+		this.reflections = new File(module, REFLECTIONS);
 	}
 
 	public File getOutputlocation() {
@@ -33,5 +36,9 @@ public class Output {
 
 	public File getModule() {
 		return module;
+	}
+
+	public File getReflections() {
+		return reflections;
 	}
 }

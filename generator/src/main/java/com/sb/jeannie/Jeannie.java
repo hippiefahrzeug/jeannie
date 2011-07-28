@@ -124,7 +124,7 @@ public class Jeannie {
 			this.module = new Module(this.modulelocation);
 			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
-			this.scanner = new ClassScanner();
+			this.scanner = new ClassScanner(module, output);
 			this.properties = readProperties(propertyfiles);
 			parseAll();
 			JeannieProperties.log();
@@ -228,7 +228,7 @@ public class Jeannie {
 			Map<String, Postprocessor> postprocessors = processorHandler.getPostprocessors();
 
 			rebuildContext();
-			LOG.info("\n{}", Context.index(preprocessors, postprocessors));
+			Context.log(preprocessors, postprocessors);
 
 			List<STGroup> groups = new ArrayList<STGroup>();
 			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);

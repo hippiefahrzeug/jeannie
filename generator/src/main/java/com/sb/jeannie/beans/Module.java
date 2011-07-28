@@ -12,12 +12,14 @@ public class Module {
 	private static final String SCRIPTLETS = "scriptlets";
 	private static final String README = "README";
 	private static final String BANNER = "BANNER";
+	private static final String REFLECTIONS = "module-reflections.xml";
 	
 	private File module;
 	private File templates;
 	private File scriptlets;
 	private File readme;
 	private File banner;
+	private File reflections;
 
 	/**
 	 * @param cartridgePath File to the path of the cartridge
@@ -28,6 +30,7 @@ public class Module {
 		scriptlets = new File(module, SCRIPTLETS);
 		readme = new File(module, README);
 		banner = new File(module, BANNER);
+		reflections = new File(module, REFLECTIONS);
 	}
 
 	public File getModule() {
@@ -48,5 +51,9 @@ public class Module {
 
 	public File getBanner() {
 		return banner;
+	}
+
+	public File getReflections() {
+		return reflections;
 	}
 }
