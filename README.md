@@ -32,13 +32,14 @@ Because of this reason, you probably ended up creating your own ad-hoc generator
 
 jeannie is optimized to address these problems and helps greatly in reusing your generators. It has a very simple concept: Everything that defines how something is generated is contained within a module. A module is a well defined collection of files:
 
-    module/             - can be named anything
-        scriptlets/     - contains your groovy scripts (optional)
-        templates/      - contains the templates
-        BANNER          - this is printed out whenever this generator runs
-        README          - documentation about the module
+    module/                    - can be named anything
+        scriptlets/            - contains your groovy scripts (optional)
+        templates/             - contains the templates
+        BANNER                 - this is printed out whenever this generator runs
+        README                 - documentation about the module
+        module-reflections.xml - speeds up class scanning
 
-You'll basically create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be versioned and retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module.
+You just create a template and possibly a scriptlet, and you have a working generator. A module like this can easily be versioned and retrieved from a repository. If you have a project that has its own module that proved to be useful, it can be easily extracted into a widely available module. A module can also be archived as a jar file.
 
 
 currently working on

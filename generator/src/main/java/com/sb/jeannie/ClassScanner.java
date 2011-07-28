@@ -27,7 +27,6 @@ import com.sb.jeannie.parsers.ParserSupport;
 import com.sb.jeannie.processors.DefaultProcessor;
 
 /**
- * 
  * @author alvi
  */
 public class ClassScanner {
@@ -103,7 +102,7 @@ public class ClassScanner {
 		ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 		configurationBuilder.filterInputsBy(filters);
 
-		List<URL> urls = new ArrayList<URL>();
+		Set<URL> urls = new HashSet<URL>();
 		ClassLoader [] classloaders = {
 				ClassScanner.class.getClassLoader(),
 				Thread.currentThread().getContextClassLoader()
