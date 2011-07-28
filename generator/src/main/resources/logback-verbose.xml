@@ -18,10 +18,6 @@
     <level value="INFO" />
   </logger>
 
-  <logger name="com.sb.jeannie.beans">
-    <level value="WARN" />
-  </logger>
-
   <logger name="org.reflections">
     <level value="WARN" />
   </logger>

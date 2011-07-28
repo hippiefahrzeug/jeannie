@@ -58,3 +58,7 @@ System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage()
 System.out.println(com.sb.jeannie.ChangeChecker.newerThan(
 		new java.io.File("/home/alvi/projects/jeannie/generator/../test"), 
 		new java.io.File("/home/alvi/projects/jeannie/generator/../generator/target/test/testbed")));
+
+
+com.sb.jeannie.LogConfiguration lc = new com.sb.jeannie.LogConfiguration();
+lc.huhu();

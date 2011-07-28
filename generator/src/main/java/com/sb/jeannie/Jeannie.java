@@ -20,6 +20,7 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
+import com.sb.jeannie.LogConfiguration.LogConfig;
 import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
@@ -121,6 +122,8 @@ public class Jeannie {
 			this.inputlocation = inputlocation;
 			this.outputlocation = outputlocation;
 			this.propertyfiles = propertyfiles;
+			
+			LogConfiguration.configure(LogConfig.debug);
 			
 			this.output = new Output(outputlocation);
 			if (modulelocation.getName().endsWith(".jar")) {
