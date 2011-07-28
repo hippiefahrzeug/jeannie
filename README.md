@@ -46,5 +46,5 @@ currently working on
 
 - tutorial
 - giving final polish for first release
-- adding 1-n and n-1 support (n-n works)
+- property handling
 

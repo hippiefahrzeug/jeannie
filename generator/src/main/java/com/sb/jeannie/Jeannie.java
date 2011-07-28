@@ -1,6 +1,7 @@
 package com.sb.jeannie;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,49 +45,77 @@ public class Jeannie {
 	private static final String STG_SUFFIX = "stg";
 	private static final String CONTEXT = "context";
 	
+	private File modulelocation;
+	private File outputlocation;
+	private File inputlocation;
+	private File [] propertyfiles;
+	
 	private List<File> allfiles;
 	private Map<File, String> fileTypes;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
-	private File modulelocation;
-	private File outputlocation;
-	private File inputlocation;
+	private Properties properties;
 	private ClassScanner scanner;
 	private ProcessorHandler processorHandler;
 	
 	public Jeannie(
 			String modulelocation, 
 			String inputlocation,
-			String outputlocation
+			String outputlocation,
+			String... propertyfiles
 	) {
-		init(new File(modulelocation), new File(inputlocation), new File(outputlocation));
+		File [] pf = new File[propertyfiles.length];
+		for (int i = 0; i < propertyfiles.length; i++) {
+			pf[i] = new File(propertyfiles[i]);
+		}
+		init(new File(modulelocation), new File(inputlocation), new File(outputlocation), pf);
+	}
+	
+	// this one is for jpage
+	public Jeannie(
+			String modulelocation, 
+			String inputlocation,
+			String outputlocation,
+			List<String> propertyfiles
+	) {
+		File [] pfiles = new File[propertyfiles.size()];
+		int i = 0;
+		for (String pf : propertyfiles) {
+			pfiles[i] = new File(pf);
+			i++;
+		}
+		init(new File(modulelocation), new File(inputlocation), new File(outputlocation), pfiles);
 	}
 	
 	public Jeannie(
 			File modulelocation, 
 			File inputlocation,
-			File outputlocation
+			File outputlocation,
+			File... propertyfiles
 	) {
-		init(modulelocation, inputlocation, outputlocation);
+		init(modulelocation, inputlocation, outputlocation, propertyfiles);
 	}
 	
 	public void init() {
-		init(modulelocation, inputlocation, outputlocation);
+		init(modulelocation, inputlocation, outputlocation, propertyfiles);
 	}
 	
 	public void init(
 			File modulelocation, 
 			File inputlocation,
-			File outputlocation
+			File outputlocation,
+			File... propertyfiles
 	) {
 		TimeTaker tt = new TimeTaker();
 		try {
 			this.modulelocation = modulelocation;
 			this.inputlocation = inputlocation;
 			this.outputlocation = outputlocation;
+			this.propertyfiles = propertyfiles;
 			this.module = new Module(modulelocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
+			this.properties = readProperties(propertyfiles);
 			parseAll();
 			JeannieProperties.log();
 		}
@@ -94,22 +123,49 @@ public class Jeannie {
 			LOG.info("init(): {}", tt);
 		}
 	}
+	
+	private Properties readProperties(File [] propertyfiles) {
+		Properties p = new Properties();
+		for (int i = 0; i < propertyfiles.length; i++) {
+			try {
+				p.load(new FileInputStream(propertyfiles[i]));
+			}
+			catch (Exception e) {
+				LOG.error("couldn't read '{}'", propertyfiles[i]);
+			}
+		}
+		
+		return p;
+	}
 
 	/**
 	 * never stops and calls generator whenever it detects a change.
 	 */
 	public void looper() {
-		ChangeChecker modulefiles = new ChangeChecker(module.getModule());
 		ChangeChecker inputfiles = new ChangeChecker(inputlocation);
+		ChangeChecker modulefiles = new ChangeChecker(modulelocation);
+		for (int i = 0; i < propertyfiles.length; i++) {
+			modulefiles.add(propertyfiles[i]);
+		}
+		
 		inputfiles.hasChangedFiles(); // don't parse first time
 		int n = 0;
+		int numInputfiles = Utils.allfiles(inputlocation).size();
+		int numModulefiles = Utils.allfiles(modulelocation).size();
 		do {
 			try {
 				if (n % 4 == 0) { // expensive. don't do this all the time...
-					modulefiles = detectChanges(module.getModule(), modulefiles);
-					inputfiles = detectChanges(inputlocation, inputfiles);
+					int num = Utils.allfiles(inputlocation).size();
+					if (numInputfiles != num) {
+						numInputfiles = num;
+						inputfiles = new ChangeChecker(inputlocation);
+					}
+					num = Utils.allfiles(modulelocation).size();
+					if (numModulefiles != num) {
+						numModulefiles = num;
+						modulefiles = new ChangeChecker(modulelocation);
+					}
 				}
-				
 				if (inputfiles.hasChangedFiles()) {
 					List<ParserSupport> parsers = scanner.getParsers();
 					for (ParserSupport parser : parsers) {
@@ -119,9 +175,11 @@ public class Jeannie {
 					parseAll();
 					generate();
 				}
-				if (modulefiles.hasChangedFiles()) {
+				else if (modulefiles.hasChangedFiles()) {
+					properties = readProperties(propertyfiles);
 					generate();
 				}
+
 				Thread.sleep(500);
 			}
 			catch (Exception e) {
@@ -131,17 +189,13 @@ public class Jeannie {
 		} while(true);
 	}
 
-	private static ChangeChecker detectChanges(File path, ChangeChecker cc) {
-		if (cc.numberOfFiles() != Utils.allfiles(path).size()) {
-			cc = new ChangeChecker(path);
-		}
-		return cc;
-	}
-	
 	private boolean isUpToDate() {
 		String skip = JeannieProperties.getGlobalSkipUptodateCheck();
 		if (!Boolean.parseBoolean(skip)) {
 			boolean u = false;
+			for (int i = 0; i < propertyfiles.length; i++) {
+				u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation);
+			}
 			u = u || ChangeChecker.newerThan(inputlocation, outputlocation);
 			u = u || ChangeChecker.newerThan(modulelocation, outputlocation);
 			return !u;
@@ -194,6 +248,8 @@ public class Jeannie {
 				Context.put(Context.CURRENT_TEMPLATE, stg.getName());
 				
 				Map<String, Object> properties = stg.rawGetDictionary(Context.PROPERTIES);
+				// no template rendering (first argument) necessary here,
+				// we only need singleoutput
 				TemplateProperties tp = new TemplateProperties(null, properties);
 				boolean single = Boolean.parseBoolean(tp.getSingleoutput());
 				
@@ -310,7 +366,7 @@ public class Jeannie {
 		Context.put(Context.INFO, new Info(inputlocation, outputlocation));
 		Context.put(Context.OBJECTMAP, allInputObjects);
 		Context.put(Context.PARSERS, scanner.getParsers());
-		//Context.put(Context.PROPERTIES, null);
+		Context.put(Context.PROPERTIES, properties);
 		Context.put(Context.SCRIPTLETS, processorHandler.getScriptlets());
 		Context.put(Context.SYSTEM_PROPERTIES, sysprops);
 	}

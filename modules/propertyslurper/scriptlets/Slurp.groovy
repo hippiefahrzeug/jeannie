@@ -2,10 +2,9 @@ import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.processors.DefaultPreprocessor;
 
 class Slurp extends DefaultPreprocessor {
-
 /*
     public List<Object> generatefor() {
-        return [1,2,3,4,5,6,7,8,9]
+        return [1,2,3,4,5,6,,7java8,9]
     }
 */
     def upper = { it.toUpperCase() }
