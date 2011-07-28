@@ -125,12 +125,10 @@ public class Jeannie {
 			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner(module, output);
-			this.properties = readProperties(propertyfiles);
-			parseAll();
 			JeannieProperties.log();
 		}
 		finally {
-			LOG.info("init(): {}", tt);
+			LOG.debug("init(): {}", tt);
 		}
 	}
 	
@@ -162,17 +160,14 @@ public class Jeannie {
 						modulefiles = new ChangeChecker(modulelocation);
 					}
 				}
-				if (inputfiles.hasChangedFiles()) {
+				if (inputfiles.hasChangedFiles() ||
+					modulefiles.hasChangedFiles()
+				) {
 					List<ParserSupport> parsers = scanner.getParsers();
 					for (ParserSupport parser : parsers) {
 						parser.init();
 					}
 					this.allfiles = Utils.allfiles(inputlocation);
-					parseAll();
-					generate();
-				}
-				else if (modulefiles.hasChangedFiles()) {
-					properties = readProperties(propertyfiles);
 					generate();
 				}
 
@@ -221,6 +216,9 @@ public class Jeannie {
 				LOG.info("no files changed, generation skipped!");
 				return;
 			}
+			properties = readProperties(propertyfiles);
+			parseAll();
+
 			processorHandler = new ProcessorHandler(module, output, scanner);
 			processorHandler.handleProcessors();
 			
@@ -265,6 +263,10 @@ public class Jeannie {
 				
 				for (File file : allfiles) {
 					String fileType = fileTypes.get(file);
+					if (fileType == null) { // not parsed!
+						continue;
+					}
+
 					String extension = Utils.fileExtension(file);
 					
 					Object current = allInputObjects.get(file);
