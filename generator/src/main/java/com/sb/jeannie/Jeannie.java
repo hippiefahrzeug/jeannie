@@ -21,6 +21,7 @@ import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.beans.Module;
+import com.sb.jeannie.beans.Output;
 import com.sb.jeannie.beans.TemplateProperties;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
@@ -54,6 +55,7 @@ public class Jeannie {
 	private Map<File, String> fileTypes;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
+	private Output output;
 	private Properties properties;
 	private ClassScanner scanner;
 	private ProcessorHandler processorHandler;
@@ -112,7 +114,15 @@ public class Jeannie {
 			this.inputlocation = inputlocation;
 			this.outputlocation = outputlocation;
 			this.propertyfiles = propertyfiles;
-			this.module = new Module(modulelocation);
+			
+			this.output = new Output(outputlocation);
+			if (modulelocation.getName().endsWith(".jar")) {
+				Utils.extract(modulelocation, output.getModule());
+				this.modulelocation = output.getModule();
+			}
+			
+			this.module = new Module(this.modulelocation);
+			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner();
 			this.properties = readProperties(propertyfiles);
@@ -124,20 +134,6 @@ public class Jeannie {
 		}
 	}
 	
-	private Properties readProperties(File [] propertyfiles) {
-		Properties p = new Properties();
-		for (int i = 0; i < propertyfiles.length; i++) {
-			try {
-				p.load(new FileInputStream(propertyfiles[i]));
-			}
-			catch (Exception e) {
-				LOG.error("couldn't read '{}'", propertyfiles[i]);
-			}
-		}
-		
-		return p;
-	}
-
 	/**
 	 * never stops and calls generator whenever it detects a change.
 	 */
@@ -189,6 +185,20 @@ public class Jeannie {
 		} while(true);
 	}
 
+	private Properties readProperties(File [] propertyfiles) {
+		Properties p = new Properties();
+		for (int i = 0; i < propertyfiles.length; i++) {
+			try {
+				p.load(new FileInputStream(propertyfiles[i]));
+			}
+			catch (Exception e) {
+				LOG.error("couldn't read '{}'", propertyfiles[i]);
+			}
+		}
+		
+		return p;
+	}
+
 	private boolean isUpToDate() {
 		String skip = JeannieProperties.getGlobalSkipUptodateCheck();
 		if (!Boolean.parseBoolean(skip)) {
@@ -211,7 +221,7 @@ public class Jeannie {
 				LOG.info("no files changed, generation skipped!");
 				return;
 			}
-			processorHandler = new ProcessorHandler(module, scanner);
+			processorHandler = new ProcessorHandler(module, output, scanner);
 			processorHandler.handleProcessors();
 			
 			Map<String, Preprocessor> preprocessors = processorHandler.getPreprocessors();

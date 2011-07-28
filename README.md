@@ -14,7 +14,7 @@ jeannie features
 ----------------
 
 * VERY simple to use. you can be up and running in a couple of minutes
-* builds on great technologies. If you're familiar with Stringtemplate and groovy, you'll be generating in no time. If you don't know either, there is no worry, you still can get started with minimal effort (BTW, no groovy is required, but it helps).
+* builds on great technologies. If you're familiar with Stringtemplate and groovy, you'll be generating in no time. Don't worry if you don't know either, you still can get started with minimal effort.
 * generates anything you want, from source code to web pages to sql scripts... whatever you fancy.
 * facilitates generator reuse
 * facilitates module maintenance

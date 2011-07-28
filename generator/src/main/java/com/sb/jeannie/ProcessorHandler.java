@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.sb.jeannie.beans.Module;
+import com.sb.jeannie.beans.Output;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
@@ -32,14 +33,16 @@ public class ProcessorHandler {
 	public static final String GROOVY_SUFFIX = ".groovy";
 
 	private Module module;
+	private Output output;
 
 	private Map<String, ProcessorBase> scriptlets;
 	private Map<String, Preprocessor> preprocessors;
 	private Map<String, Postprocessor> postprocessors;
 	private ClassScanner scanner;
 	
-	public ProcessorHandler(Module module, ClassScanner scanner) {
+	public ProcessorHandler(Module module, Output output, ClassScanner scanner) {
 		this.module = module;
+		this.output = output;
 		this.scanner = scanner;
 		resetProcessors();
 	}
@@ -76,8 +79,9 @@ public class ProcessorHandler {
 	 */
 	private void compileScriptlets(KeyValuePrettyPrinter pp) {
 		try {
-			File target = new File("/tmp/ttt");
-
+			File target = output.getScripts();
+			target.mkdirs();
+			
 			Map<String, String> classMap = null;
 			File classmapFile = new File(target, "classmap");
 			if (classmapFile.exists()) {

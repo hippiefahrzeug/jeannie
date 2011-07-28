@@ -47,10 +47,11 @@ ALL_COMMON_MODULES =
 desc "The jeannie generator"
 define 'jeannie' do
 
-  project.version = VERSION_NUMBER
+  project.version = THIS_VERSION
   project.group = GROUP
   manifest["Copyright"] = COPYRIGHT
   manifest["Implementation-Vendor"] = COPYRIGHT
+  manifest["Implementation-Version"] = THIS_VERSION
 
   define 'generator' do
     compile.with ALL_COMMON_MODULES

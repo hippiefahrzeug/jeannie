@@ -1,14 +1,21 @@
 package com.sb.jeannie;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -158,4 +165,41 @@ public class Utils {
     	}
     	return in;
     }
+    
+	public static boolean extract(File path, File dest) {
+		dest.mkdirs();
+		int n = 0;
+		try {
+			JarFile jar = new JarFile(path);
+			Enumeration<JarEntry> enumer = jar.entries();
+			while (enumer.hasMoreElements()) {
+				JarEntry file = (JarEntry) enumer.nextElement();
+				// System.out.println("1 "  + dest + File.separator + file.getName());
+				File f = new File(dest.getAbsolutePath() + File.separator + file.getName());
+				if (file.isDirectory()) { // if its a directory, create it
+					f.mkdir();
+					continue;
+				}
+				
+				n++;
+				InputStream is = jar.getInputStream(file); // get the input stream
+				BufferedInputStream in = new BufferedInputStream(is);
+	            OutputStream fout= new FileOutputStream(f);
+	            BufferedOutputStream bout= new BufferedOutputStream(fout);
+				byte[] buf = new byte[1000];
+				int s = in.read(buf);
+				while (s > 0) {
+					bout.write(buf, 0, s);
+					s = in.read(buf);
+				}
+				bout.close();
+				in.close();
+				is.close();
+			}
+		}
+		catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
 }

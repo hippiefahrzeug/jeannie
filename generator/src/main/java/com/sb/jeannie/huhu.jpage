@@ -30,13 +30,17 @@ com.sb.jeannie.HammaYaml.testes2();
 String b = "/home/alvi/projects/jeannie/";
 java.util.List<String> l = new java.util.ArrayList<String>();
 l.add(b + "modules/propertyslurper/slurp.properties");
+l.add(b + "modules/propertyslurper/slurp1.properties");
+l.add(b + "modules/propertyslurper/slurp2.properties");
 com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
-		b + "modules/propertyslurper", 
+		b + "modules/propertyslurper.jar", 
 		b + "test/input", 
 		"/tmp/propertyslurper",
 		l
 );
 genie.looper();
+
+
 
 System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage().getName());
 
