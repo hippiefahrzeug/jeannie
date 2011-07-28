@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +54,7 @@ public class Jeannie {
 	private File [] propertyfiles;
 	
 	private List<File> allfiles;
+	private List<File> allPropertyfiles;
 	private Map<File, String> fileTypes;
 	private InvertibleMap<File, Object> allInputObjects;
 	private Module module;
@@ -121,6 +124,10 @@ public class Jeannie {
 				this.modulelocation = output.getModule();
 			}
 			
+			List<File> props = Utils.allfiles(this.modulelocation, ".properties");
+			Collections.sort(props);
+			props.addAll(Arrays.asList(propertyfiles));
+			this.allPropertyfiles = props;
 			this.module = new Module(this.modulelocation);
 			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
@@ -167,7 +174,7 @@ public class Jeannie {
 					for (ParserSupport parser : parsers) {
 						parser.init();
 					}
-					this.allfiles = Utils.allfiles(inputlocation);
+					init();
 					generate();
 				}
 
@@ -180,17 +187,16 @@ public class Jeannie {
 		} while(true);
 	}
 
-	private Properties readProperties(File [] propertyfiles) {
+	private Properties readProperties(List<File> propertyfiles) {
 		Properties p = new Properties();
-		for (int i = 0; i < propertyfiles.length; i++) {
+		for (File prop : propertyfiles) {
 			try {
-				p.load(new FileInputStream(propertyfiles[i]));
+				p.load(new FileInputStream(prop));
 			}
 			catch (Exception e) {
-				LOG.error("couldn't read '{}'", propertyfiles[i]);
+				LOG.error("couldn't read '{}'", prop);
 			}
 		}
-		
 		return p;
 	}
 
@@ -216,7 +222,7 @@ public class Jeannie {
 				LOG.info("no files changed, generation skipped!");
 				return;
 			}
-			properties = readProperties(propertyfiles);
+			properties = readProperties(allPropertyfiles);
 			parseAll();
 
 			processorHandler = new ProcessorHandler(module, output, scanner);

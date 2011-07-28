@@ -174,9 +174,8 @@ public class Utils {
 			Enumeration<JarEntry> enumer = jar.entries();
 			while (enumer.hasMoreElements()) {
 				JarEntry file = (JarEntry) enumer.nextElement();
-				// System.out.println("1 "  + dest + File.separator + file.getName());
 				File f = new File(dest.getAbsolutePath() + File.separator + file.getName());
-				if (file.isDirectory()) { // if its a directory, create it
+				if (file.isDirectory()) {
 					f.mkdir();
 					continue;
 				}
