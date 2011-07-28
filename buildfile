@@ -3,7 +3,7 @@ VERSION_NUMBER = "0.0.0"
 THIS_VERSION = "0.0.0-SNAPSHOT"
 Release.next_version = "0.1.0-SNAPSHOT"
 
-GROUP = "lifelog"
+GROUP = "jeannie"
 COPYRIGHT = "softbork"
 
 require "buildr/ide/eclipse"
