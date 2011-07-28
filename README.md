@@ -47,5 +47,5 @@ currently working on
 
 - tutorial
 - giving final polish for first release
-- property handling
+
 
