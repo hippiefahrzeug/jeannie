@@ -106,13 +106,18 @@ public class TemplateProperties extends BeanSupport {
 		return PROPERTY_MAP;
 	}
 
-	protected Map<String, String> getProps() {
+	public Map<String, String> getProps() {
 		return props;
 	}
 	
 	public void log() {
 		log(LOG, PROPERTY_MAP, props);
 	}
+	
+    public static String getIndex() {
+        return props.get(INDEX);
+    }
+    
 /*
 	public String getPreprocessor() {
 		return props.get(PREPROCESSOR);

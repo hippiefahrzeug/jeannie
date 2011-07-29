@@ -20,7 +20,6 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
-import com.sb.jeannie.LogConfiguration.LogConfig;
 import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
@@ -123,8 +122,6 @@ public class Jeannie {
 			this.outputlocation = outputlocation;
 			this.propertyfiles = propertyfiles;
 			
-			LogConfiguration.configure(LogConfig.debug);
-			
 			this.output = new Output(outputlocation);
 			if (modulelocation.getName().endsWith(".jar")) {
 				Utils.extract(modulelocation, output.getModule());
@@ -135,13 +132,20 @@ public class Jeannie {
 			Collections.sort(props);
 			props.addAll(Arrays.asList(propertyfiles));
 			this.allPropertyfiles = props;
+			
+			properties = readProperties(allPropertyfiles);
+			JeannieProperties.init();
+			JeannieProperties.handleProperties(properties);
+			JeannieProperties.log();
+
+			LogConfiguration.configure();
+			
 			this.module = new Module(this.modulelocation);
 			this.output = new Output(outputlocation);
 			this.allfiles = Utils.allfiles(inputlocation);
 			this.scanner = new ClassScanner(module, output);
 			this.ignore = new HashSet<String>();
 			ignore.add(Output.WORKINGDIR);
-			JeannieProperties.log();
 		}
 		finally {
 			LOG.debug("init(): {}", tt);
@@ -176,6 +180,7 @@ public class Jeannie {
 						modulefiles = new ChangeChecker(modulelocation, ignore);
 					}
 				}
+				
 				if (inputfiles.hasChangedFiles() ||
 					modulefiles.hasChangedFiles()
 				) {
@@ -231,7 +236,7 @@ public class Jeannie {
 				LOG.info("no files changed, generation skipped!");
 				return;
 			}
-			properties = readProperties(allPropertyfiles);
+			
 			parseAll();
 
 			processorHandler = new ProcessorHandler(module, output, scanner);
@@ -247,7 +252,8 @@ public class Jeannie {
 			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
 			for (File template : templfiles) {
 				STGroupFile stg = new STGroupFile(
-						template.getAbsolutePath(), 
+						template.getAbsolutePath(),
+						JeannieProperties.getGlobalEncoding(),
 						JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
 						JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
 				);
@@ -302,6 +308,8 @@ public class Jeannie {
 					// so that ITERATOR and COUNTER could be used as
 					// well. but this would be quite expensive.
 					tp.handleTemplates(stg);
+					Context.put(Context.TEMPLATE_PROPERTIES, tp.getProps());
+					
 					boolean isType = (tp.getType() == null || fileType.equals(tp.getType()));
 					boolean isExtension = (tp.getExtension() == null || extension.equals(tp.getExtension()));
 					
@@ -396,6 +404,7 @@ public class Jeannie {
 		Context.put(Context.PROPERTIES, properties);
 		Context.put(Context.SCRIPTLETS, processorHandler.getScriptlets());
 		Context.put(Context.SYSTEM_PROPERTIES, sysprops);
+		Context.put(Context.JEANNIE_PROPERTIES, JeannieProperties.getProperties());
 	}
 
 	private void parseAll() {

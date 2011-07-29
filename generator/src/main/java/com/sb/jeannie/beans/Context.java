@@ -16,6 +16,7 @@ import com.sb.jeannie.ProcessorHandler;
 import com.sb.jeannie.interfaces.Postprocessor;
 import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
+import com.sb.jeannie.utils.Utils;
 
 public enum Context {
 	inst;
@@ -34,6 +35,8 @@ public enum Context {
 	public static final String SCRIPTLETS = "scriptlets";
 	public static final String PROPERTIES = "properties";
 	public static final String SYSTEM_PROPERTIES = "systemproperties";
+	public static final String JEANNIE_PROPERTIES = "jeannieproperties";
+	public static final String TEMPLATE_PROPERTIES = "templateproperties";
 	public static final String INFO = "info";
 	public static final String CURRENT_TEMPLATE = "currenttemplate";
 	public static final String OBJECTMAP = "objectmap";
@@ -57,6 +60,8 @@ public enum Context {
     	index.put(SCRIPTLETS, "list of all scriptlets");
     	index.put(PROPERTIES, "map of properties");
     	index.put(SYSTEM_PROPERTIES, "system properties");
+    	index.put(JEANNIE_PROPERTIES, "jeannie properties");
+    	index.put(TEMPLATE_PROPERTIES, "template properties");
     	index.put(INFO, "generator information");
     	index.put(OBJECTMAP, "invertible map (file <-> object)");
     	index.put(CURRENT_TEMPLATE, "the current template");
@@ -91,6 +96,7 @@ public enum Context {
     	List<String> lines = indexList(preprocessors, postprocessors);
     	for (String line : lines) {
     		sb.append(line);
+    		sb.append(Utils.NL);
 		}
     	return sb.toString();
     }
@@ -235,6 +241,14 @@ public enum Context {
     
     public Object getSystemproperties() {
         return context.get(SYSTEM_PROPERTIES);
+    }
+    
+    public Object getJeannieproperties() {
+        return context.get(JEANNIE_PROPERTIES);
+    }
+    
+    public Object getTemplateproperties() {
+        return context.get(TEMPLATE_PROPERTIES);
     }
     
     public Info getInfo() {

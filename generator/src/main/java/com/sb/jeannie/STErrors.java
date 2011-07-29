@@ -20,7 +20,10 @@ public class STErrors implements STErrorListener {
 
     public void runTimeError(STMessage msg) {
     	STNoSuchPropertyException e = (STNoSuchPropertyException)msg.cause;
-    	LOG.error("error retrieving property: {}", e.propertyName);
+    	LOG.error("error retrieving property: {}", msg);
+    	if (e != null) {
+        	LOG.error("exception caught", e.propertyName);
+    	}
     }
 
     public void IOError(STMessage msg) {

@@ -2,6 +2,7 @@ package com.sb.jeannie.beans;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ public class JeannieProperties extends BeanSupport {
         PROPERTY_MAP.put(GLOBAL_ENCODING, "set encoding type for read and written files");
         PROPERTY_MAP.put(GLOBAL_SKIP_UPTODATE_CHECK, "skip up-to-date check");
         PROPERTY_MAP.put(GLOBAL_VERBOSE, "print out the index whenever the generator runs");
-        PROPERTY_MAP.put(GLOBAL_DEBUG, "debug mode - causes lots of output");
+        PROPERTY_MAP.put(GLOBAL_DEBUG, "DEBUG mode - causes lots of output");
         PROPERTY_MAP.put(GLOBAL_TYPES, "only parse these types of files (comma separated)");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_START_CHAR, "start delimiter character for stringtemplate expressions");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_END_CHAR, "end delimiter character for stringtemplate expressions");
@@ -40,6 +41,10 @@ public class JeannieProperties extends BeanSupport {
         PROPERTY_MAP.put(CSV_SKIP_LINES, "csv parser: how many lines to skip");
         PROPERTY_MAP.put(CSV_QUOTE_CHARACTER, "csv parser: character used to quote");
 
+        init();
+    }
+    
+    public static void init() {
         // set the defaults here
         props = new HashMap<String, String>();
         
@@ -53,24 +58,35 @@ public class JeannieProperties extends BeanSupport {
         props.put(CSV_SEPARATOR, ",");
         props.put(CSV_SKIP_LINES, "0");
         props.put(CSV_QUOTE_CHARACTER, "\"");
+        
+        Properties sysproperties = System.getProperties();
+        handleProperties(PROPERTY_MAP, sysproperties, props);
     }
     
-    public JeannieProperties(Map<String, Object> properties) {
-        handleProperties(PROPERTY_MAP, properties);
+    public static void handleProperties(Properties properties) {
+        handleProperties(PROPERTY_MAP, properties, props);
     }
-
+    
 	protected Map<String, String> getPropertyMap() {
 		return PROPERTY_MAP;
 	}
 
-	protected Map<String, String> getProps() {
+	public Map<String, String> getProps() {
 		return props;
 	}
+
+    public static Map<String, String> getProperties() {
+    	return props;
+    }
 
 	public static void log() {
 		log(LOG, PROPERTY_MAP, props);
 	}
 	
+    public static String getIndex() {
+        return props.get(INDEX);
+    }
+    
     public static String getGlobalEncoding() {
         return props.get(GLOBAL_ENCODING);
     }

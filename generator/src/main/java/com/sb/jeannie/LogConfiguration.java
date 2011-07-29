@@ -1,9 +1,12 @@
 package com.sb.jeannie;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sb.jeannie.beans.JeannieProperties;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -12,34 +15,49 @@ import ch.qos.logback.core.joran.spi.JoranException;
 public class LogConfiguration {
 	final static Logger LOG = LoggerFactory.getLogger(LogConfiguration.class);
 	
-	private static final String PRODUCTION = "/logback.xml";
-	private static final String VERBOSE = "/logback-verbose.xml";
-	private static final String DEBUG = "/logback-debug.xml";
+	private static final String PRODUCTION_CFG = "logback.xml";
+	private static final String VERBOSE_CFG = "logback-verbose.xml";
+	private static final String DEBUG_CFG = "logback-debug.xml";
 	
 	public enum LogConfig {
-		info,
-		verbose,
-		debug
+		PROD,
+		VERBOSE,
+		DEBUG
 	}
 	
+	public static void configure() {
+		boolean debug = Boolean.parseBoolean(JeannieProperties.getGlobalDebug());
+		boolean verbose = Boolean.parseBoolean(JeannieProperties.getGlobalVerbose());
+
+		if (debug) {
+			configure(LogConfig.DEBUG);
+		}
+		else if (verbose) {
+			configure(LogConfig.VERBOSE);
+		}
+		else {
+			configure(LogConfig.PROD);
+		}
+	}
+
 	public static void configure(LogConfig cfg) {
-	    String profile = PRODUCTION;
+	    String profile = PRODUCTION_CFG;
 		try {
 		    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		    JoranConfigurator configurator = new JoranConfigurator();
 		    configurator.setContext(lc);
 		    InputStream cfgstr;
 		    Class<LogConfiguration> clazz = LogConfiguration.class;
-			if (LogConfig.verbose.equals(cfg)) {
-				profile = VERBOSE;
+			if (LogConfig.DEBUG.equals(cfg)) {
+				profile = DEBUG_CFG;
 		    }
-		    if (LogConfig.debug.equals(cfg)) {
-				profile = DEBUG;
+			else if (LogConfig.VERBOSE.equals(cfg)) {
+				profile = VERBOSE_CFG;
 		    }
 		    else {
-				profile = PRODUCTION;
+				profile = PRODUCTION_CFG;
 		    }
-		    cfgstr = clazz.getResourceAsStream(profile);
+		    cfgstr = clazz.getResourceAsStream(File.separatorChar + profile);
 		    lc.reset();
 		    configurator.doConfigure(cfgstr);
 		}
