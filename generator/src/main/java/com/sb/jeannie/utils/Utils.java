@@ -215,4 +215,28 @@ public class Utils {
 		}
 		return true;
 	}
+	
+	/**
+	 * convert a duration measured in miliseconds to a human
+	 * readable string
+	 */
+	public static String ms2time(long d) {
+		long s = d/1000;
+		long ms = d - s * 1000;
+		long m = s/60;
+		s = s - m * 60;
+		long h = m / 60;
+		m = m - h * 60;
+		
+		if (h > 0) {
+			return String.format("%dh:%dm:%ds.%d", h, m, s, ms);
+		}
+		else if (m > 0) {
+			return String.format("%dm:%ds.%d", m, s, ms);
+		}
+		else if (s > 0) {
+			return String.format("%ds.%d", s, ms);
+		}
+		return String.format("%d", ms);
+	}
 }

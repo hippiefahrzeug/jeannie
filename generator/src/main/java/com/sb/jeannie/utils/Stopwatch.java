@@ -1,9 +1,9 @@
 package com.sb.jeannie.utils;
 
-public class TimeTaker {
+public class Stopwatch {
     private long start;
 
-    public TimeTaker() {
+    public Stopwatch() {
         init();
     }
 

@@ -58,7 +58,18 @@ define 'jeannie' do
 
   define 'generator' do
     compile.with ALL_COMMON_MODULES
+    #package(:jar).merge(ALL_COMMON_MODULES)
     package :jar
+    package :sources
   end
 
+  define 'modules' do
+      package(:jar, :id=>'propertyslurper').include _('propertyslurper')
+      package(:jar, :id=>'testbed').include _('testbed')
+  end
+
+  package(:zip).include(projects('generator'), ALL_COMMON_MODULES, :path=>'lib').
+                include(projects('modules'), :path=>'modules')
+  package(:tgz).include(projects('generator'), ALL_COMMON_MODULES, :path=>'lib').
+                include(projects('modules'), :path=>'modules')
 end

@@ -31,7 +31,7 @@ import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.parsers.ParserSupport;
 import com.sb.jeannie.renderers.StringRenderer;
 import com.sb.jeannie.utils.ChangeChecker;
-import com.sb.jeannie.utils.TimeTaker;
+import com.sb.jeannie.utils.Stopwatch;
 import com.sb.jeannie.utils.Utils;
 
 /**
@@ -115,7 +115,7 @@ public class Jeannie {
 			File outputlocation,
 			File... propertyfiles
 	) {
-		TimeTaker tt = new TimeTaker();
+		Stopwatch tt = new Stopwatch();
 		try {
 			this.modulelocation = modulelocation;
 			this.inputlocation = inputlocation;
@@ -216,24 +216,36 @@ public class Jeannie {
 
 	private boolean isUpToDate() {
 		String skip = JeannieProperties.getGlobalSkipUptodateCheck();
-		if (!Boolean.parseBoolean(skip)) {
-			boolean u = false;
-			for (int i = 0; i < propertyfiles.length; i++) {
-				u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation, ignore);
-			}
-			u = u || ChangeChecker.newerThan(inputlocation, outputlocation, ignore);
-			u = u || ChangeChecker.newerThan(modulelocation, outputlocation, ignore);
-			return !u;
+		if (Boolean.parseBoolean(skip)) {
+			LOG.info("skipping up-to-date check");
+			return false;
 		}
-		return true;
+		boolean u = false;
+		for (int i = 0; i < propertyfiles.length; i++) {
+			u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation, ignore);
+		}
+		u = u || ChangeChecker.newerThan(inputlocation, outputlocation, ignore);
+		u = u || ChangeChecker.newerThan(modulelocation, outputlocation, ignore);
+		if (!u) {
+			long am = ChangeChecker.getAge(modulelocation);
+			long ai = ChangeChecker.getAge(inputlocation);
+			long ao = ChangeChecker.getAge(outputlocation);
+			
+			LOG.info("no files changed, generation skipped! ({}=={})", 
+					JeannieProperties.GLOBAL_SKIP_UPTODATE_CHECK, skip);
+			LOG.info("module: {} (modified {} ago)", modulelocation, Utils.ms2time(am));
+			LOG.info("input:  {} (modified {} ago)", inputlocation, Utils.ms2time(ai));
+			LOG.info("output: {} (modified {} ago)", outputlocation, Utils.ms2time(ao));
+		}
+		return !u;
 	}
 	
 	public void generate() {
-		TimeTaker tt = new TimeTaker();
-		int generated = 0;
+		Stopwatch tt = new Stopwatch();
+		int generatedFiles = 0;
+		int generatedChars = 0;
 		try {
 			if (isUpToDate()) {
-				LOG.info("no files changed, generation skipped!");
 				return;
 			}
 			
@@ -328,6 +340,7 @@ public class Jeannie {
 						Context.put(Context.ITERATOR, iterator);
 						Context.put(Context.COUNTER, Integer.valueOf(n));
 						String result = st.render();
+						generatedChars += result.length();
 						Context.put(Context.RESULT, result);
 						handleWrite(tp, result);
 						n++;
@@ -335,7 +348,7 @@ public class Jeannie {
 							break;
 						}
 					}
-					generated += n;
+					generatedFiles += n;
 					if (single) {
 						break;
 					}
@@ -347,7 +360,11 @@ public class Jeannie {
 			}
 		}
 		finally {
-			LOG.info("generated {} files, {}", generated, tt);
+			double kbs = generatedChars/1024.0;
+			double t = kbs/(tt.getElapsedTimeMillis()/1000.0);
+			String msg = String.format("generated %s files, %.2f kb, %.2f kb/sec, %s", 
+					generatedFiles, kbs, t, tt);
+			LOG.info("{}", msg);
 		}
 	}
 

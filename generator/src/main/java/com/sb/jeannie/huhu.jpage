@@ -27,18 +27,14 @@ com.sb.jeannie.HammaYaml.testes2();
 
 String b = "/home/alvi/projects/jeannie/";
 java.util.List<String> l = new java.util.ArrayList<String>();
-l.add(b + "modules/propertyslurper/slurp.properties");
-l.add(b + "modules/propertyslurper/slurp1.properties");
-l.add(b + "modules/propertyslurper/slurp2.properties");
 com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
 		b + "modules/propertyslurper", 
 		b + "test/input", 
 		"/tmp/propertyslurper",
 		l
 );
-genie.generate();
+//genie.generate();
 genie.looper();
-
 
 
 String b = "/home/alvi/projects/jeannie/";
@@ -62,3 +58,6 @@ System.out.println(com.sb.jeannie.ChangeChecker.newerThan(
 
 com.sb.jeannie.LogConfiguration lc = new com.sb.jeannie.LogConfiguration();
 lc.huhu();
+
+
+

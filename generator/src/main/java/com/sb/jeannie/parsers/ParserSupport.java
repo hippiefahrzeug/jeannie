@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.sb.jeannie.KeyValuePrettyPrinter;
 import com.sb.jeannie.annotations.Parser;
 import com.sb.jeannie.beans.JeannieProperties;
-import com.sb.jeannie.utils.TimeTaker;
+import com.sb.jeannie.utils.Stopwatch;
 import com.sb.jeannie.utils.Utils;
 
 public abstract class ParserSupport {
@@ -76,7 +76,7 @@ public abstract class ParserSupport {
     		Map<File, String> fileTypes, 
     		int dl
     ) {
-		TimeTaker tt = new TimeTaker();
+		Stopwatch tt = new Stopwatch();
     	for (File file : files) {
     		inputObjects.put(file, parse(file));
     		fileTypes.put(file, type);

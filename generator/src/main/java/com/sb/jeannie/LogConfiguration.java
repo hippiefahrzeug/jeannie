@@ -65,7 +65,7 @@ public class LogConfiguration {
 			LOG.error("exception caught", e);
 		}
 		finally {
-			LOG.info("tracing profile: {}", profile);
+			LOG.debug("tracing profile: {}", profile);
 		}
 	}
 }

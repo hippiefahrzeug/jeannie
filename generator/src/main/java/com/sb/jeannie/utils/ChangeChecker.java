@@ -2,7 +2,9 @@ package com.sb.jeannie.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -12,9 +14,10 @@ import java.util.Set;
  * @author alvi
  */
 public class ChangeChecker {
+	private static Map<File, Long> ages = new HashMap<File, Long>();
 	private List<File> files = new ArrayList<File>();
-	private long lastModified = 0;
 	private Set<String> ignore;
+	private long lastModified = 0;
 	
 	/**
 	 * @param ignore set of file names that shall be ignored
@@ -49,10 +52,13 @@ public class ChangeChecker {
 	 * @param compareTo
 	 */
 	public static boolean newerThan(File compareFrom, File compareTo, Set<String> ignore) {
-		ChangeChecker cc = new ChangeChecker(compareTo, ignore);
+		ChangeChecker cc = new ChangeChecker(compareFrom, ignore);
 		cc.hasChangedFiles();
-		cc.add(compareFrom);
-		return cc.hasChangedFiles();
+		ages.put(compareFrom, cc.lastModified);
+		cc.add(compareTo);
+		boolean result = cc.hasChangedFiles();
+		ages.put(compareTo, cc.lastModified);
+		return !result;
 	}
 	
 	/**
@@ -100,5 +106,11 @@ public class ChangeChecker {
 	
 	public int numberOfFiles() {
 		return files.size();
+	}
+
+	public static Long getAge(File f) {
+        long now = System.currentTimeMillis();
+		long lm = ages.get(f);
+		return now-lm;
 	}
 }
