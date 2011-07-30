@@ -142,7 +142,6 @@ public class Jeannie {
 			JeannieProperties.handleProperties(properties);
 			LogConfiguration.configure();
 			JeannieProperties.log();
-
 			
 			this.module = new Module(this.modulelocation);
 			this.output = new Output(outputlocation);
@@ -276,22 +275,7 @@ public class Jeannie {
 			rebuildContext();
 			Context.log(preprocessors, postprocessors);
 
-			List<STGroup> groups = new ArrayList<STGroup>();
-			List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
-			for (File template : templfiles) {
-				STGroupFile stg = new STGroupFile(
-						template.getAbsolutePath(),
-						JeannieProperties.getGlobalEncoding(),
-						JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
-						JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
-				);
-				
-				stg.registerRenderer(String.class, new StringRenderer());
-				stg.setListener(new STErrors());
-				stg.defineDictionary(CONTEXT, Context.inst.getContext());
-
-				groups.add(stg);
-			}
+			List<STGroup> groups = createGroups();
 
 			for (STGroup stg : groups) {
 				ST st = stg.getInstanceOf(TemplateProperties.MAIN);
@@ -395,6 +379,26 @@ public class Jeannie {
 					generatedFiles, kbs, t, tt);
 			LOG.info("{}", msg);
 		}
+	}
+
+	private List<STGroup> createGroups() {
+		List<STGroup> groups = new ArrayList<STGroup>();
+		List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
+		for (File template : templfiles) {
+			STGroupFile stg = new STGroupFile(
+					template.getAbsolutePath(),
+					JeannieProperties.getGlobalEncoding(),
+					JeannieProperties.getGlobalDelimiterStartChar().charAt(0), 
+					JeannieProperties.getGlobalDelimiterEndChar().charAt(0)
+			);
+			
+			stg.registerRenderer(String.class, new StringRenderer());
+			stg.setListener(new STErrors());
+			stg.defineDictionary(CONTEXT, Context.inst.getContext());
+
+			groups.add(stg);
+		}
+		return groups;
 	}
 
 	private boolean handleWrite(TemplateProperties tp, String result) {
