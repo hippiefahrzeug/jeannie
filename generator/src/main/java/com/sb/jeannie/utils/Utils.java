@@ -36,7 +36,6 @@ public class Utils {
         Charset encoding = null;
 		String charset = JeannieProperties.getGlobalEncoding();
     	try {
-    		LOG.debug("setting encoding to: " + charset);
 			encoding = Charset.forName(charset);
     	}
     	catch (Exception e) {

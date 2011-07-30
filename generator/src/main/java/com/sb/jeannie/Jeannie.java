@@ -140,9 +140,9 @@ public class Jeannie {
 			properties = readProperties(allPropertyfiles);
 			JeannieProperties.init();
 			JeannieProperties.handleProperties(properties);
+			LogConfiguration.configure();
 			JeannieProperties.log();
 
-			LogConfiguration.configure();
 			
 			this.module = new Module(this.modulelocation);
 			this.output = new Output(outputlocation);
@@ -256,7 +256,13 @@ public class Jeannie {
 			if (output.getStatus().exists()) {
 				Gson gson = new Gson();
 				FileReader fr = new FileReader(output.getStatus());
-		        output = gson.fromJson(fr, Output.class);
+				try {
+					Map<String, String> digests = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
+					output.setDigests(digests);
+				}
+				catch (Exception e) {
+					LOG.error("couldn't read digest.");
+				}
 			}
 
 			parseAll();
@@ -370,9 +376,9 @@ public class Jeannie {
 				// rebuildContext();
 			}
 			
-			// write output object as a json file
+			// write digest map as a status.json file
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			String json = gson.toJson(output);
+			String json = gson.toJson(output.getDigests());
 			FileWriter fw = new FileWriter(output.getStatus());
 			fw.append(json);
 			fw.flush();

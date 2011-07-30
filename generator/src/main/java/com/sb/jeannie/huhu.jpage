@@ -61,3 +61,7 @@ lc.huhu();
 
 
 
+System.out.println(com.sb.jeannie.utils.Utils.ms2time(6002457));
+
+
+System.out.println(com.sb.jeannie.utils.Utils.sha1("The quick brown fox jumps over the lazy dog"));

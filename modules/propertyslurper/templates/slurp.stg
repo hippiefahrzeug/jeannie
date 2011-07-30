@@ -1,6 +1,6 @@
 properties ::= [
     "type" : "csv",
-    "postprocessor" : "JavaPostprocessor"
+    "dpostprocessor" : "JavaPostprocessor"
 ]
 
 main() ::= <<
@@ -9,7 +9,7 @@ package $context.properties.package$;
 /**
  * note: $context.info.warn$
  * generator: v$context.info.version$
- * generated at: $context.info.time$
+ * generated at: 
  * template: $context.currenttemplate$
  */
 public class $context.Slurp.classname$ {

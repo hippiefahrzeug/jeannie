@@ -19,6 +19,8 @@ public class LogConfiguration {
 	private static final String VERBOSE_CFG = "logback-verbose.xml";
 	private static final String DEBUG_CFG = "logback-debug.xml";
 	
+	private static LogConfig currentCfg = null;
+	
 	public enum LogConfig {
 		PROD,
 		VERBOSE,
@@ -43,6 +45,10 @@ public class LogConfiguration {
 	public static void configure(LogConfig cfg) {
 	    String profile = PRODUCTION_CFG;
 		try {
+			if (cfg.equals(currentCfg)) {
+				return;
+			}
+			currentCfg = cfg;
 		    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		    JoranConfigurator configurator = new JoranConfigurator();
 		    configurator.setContext(lc);

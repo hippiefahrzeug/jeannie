@@ -40,6 +40,7 @@ public class ClassPathExtender {
 				LOG.debug("already have {}", u);
 				return;
 			}
+			LOG.debug("adding to classpath {}", u);
 			Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
 			method.setAccessible(true);
 			method.invoke(classloader, new Object[]{ u });

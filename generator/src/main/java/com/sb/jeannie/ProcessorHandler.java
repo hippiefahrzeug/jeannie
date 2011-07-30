@@ -85,7 +85,7 @@ public class ProcessorHandler {
 			target.mkdirs();
 			
 			Map<String, String> classMap = null;
-			File classmapFile = new File(target, "classmap");
+			File classmapFile = output.getClassmap();
 			if (classmapFile.exists()) {
 				Gson gson = new Gson();
 				FileReader fr = new FileReader(classmapFile);
@@ -142,6 +142,7 @@ public class ProcessorHandler {
 			ClassPathExtender.addURL(
 					rl,
 					target.toURI().toURL());
+			
 			Collection<String> keys = classMap.keySet();
 			for (String scriptletName : keys) {
 				String scriptletClassName = classMap.get(scriptletName);
