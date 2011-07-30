@@ -11,8 +11,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -238,5 +240,27 @@ public class Utils {
 			return String.format("%ds.%d", s, ms);
 		}
 		return String.format("%d", ms);
+	}
+	
+	public static String sha1(String contents) {
+		MessageDigest md;
+		try {
+			md = MessageDigest.getInstance("SHA1");
+			md.update(contents.getBytes());
+			byte[] hash = md.digest();
+			return byteArray2Hex(hash);
+		}
+		catch (Exception e) {
+			LOG.error("exception caught", e);
+			return null;
+		}
+	}
+	
+	private static String byteArray2Hex(byte[] hash) {
+	    Formatter formatter = new Formatter();
+	    for (byte b : hash) {
+	        formatter.format("%02x", b);
+	    }
+	    return formatter.toString();
 	}
 }

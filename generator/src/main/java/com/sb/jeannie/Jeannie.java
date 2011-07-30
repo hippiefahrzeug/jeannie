@@ -2,6 +2,7 @@ package com.sb.jeannie;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.sb.jeannie.beans.Context;
 import com.sb.jeannie.beans.Info;
 import com.sb.jeannie.beans.JeannieProperties;
@@ -249,6 +253,12 @@ public class Jeannie {
 				return;
 			}
 			
+			if (output.getStatus().exists()) {
+				Gson gson = new Gson();
+				FileReader fr = new FileReader(output.getStatus());
+		        output = gson.fromJson(fr, Output.class);
+			}
+
 			parseAll();
 
 			processorHandler = new ProcessorHandler(module, output, scanner);
@@ -342,8 +352,9 @@ public class Jeannie {
 						String result = st.render();
 						generatedChars += result.length();
 						Context.put(Context.RESULT, result);
-						handleWrite(tp, result);
-						n++;
+						if (handleWrite(tp, result)) {
+							n++;
+						}
 						if (single) {
 							break;
 						}
@@ -358,6 +369,18 @@ public class Jeannie {
 				// (it may be as there may be some polution...)
 				// rebuildContext();
 			}
+			
+			// write output object as a json file
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			String json = gson.toJson(output);
+			FileWriter fw = new FileWriter(output.getStatus());
+			fw.append(json);
+			fw.flush();
+			fw.close();
+
+		}
+		catch (IOException e) {
+			LOG.error("couldn't write!", e);
 		}
 		finally {
 			double kbs = generatedChars/1024.0;
@@ -368,7 +391,7 @@ public class Jeannie {
 		}
 	}
 
-	private void handleWrite(TemplateProperties tp, String result) {
+	private boolean handleWrite(TemplateProperties tp, String result) {
 		try {
 			Postprocessor postprocessor = processorHandler.fetchPostprocessor(tp.getPostprocessor());
 			String outputdir = tp.getOutputdir();
@@ -382,25 +405,35 @@ public class Jeannie {
 			outputname = Utils.nvl(outputname, postprocessor.getOutputname());
 			dontgenerate = Utils.nvl(dontgenerate, postprocessor.getDongenerate());
 			
-			if (dontgenerate == false) {
-				String outfile = outputdir + File.separator + outputname;
-				File outputFile = new File(outputlocation, outfile);
-				File outputdirFile = outputFile.getParentFile();
-				if (!outputdirFile.exists()) {
-					boolean mkdirs = outputdirFile.mkdirs();
-					if (mkdirs == false) {
-						LOG.error("couldn't create directory '{}'", outputdirFile);
-					}
-				}
-				
-				FileWriter fw = new FileWriter(outputFile);
-				fw.append(result);
-				fw.flush();
-				fw.close();
+			if (dontgenerate) {
+				return false;
 			}
+			String outfile = outputdir + File.separator + outputname;
+			File outputFile = new File(outputlocation, outfile);
+			File outputdirFile = outputFile.getParentFile();
+
+			if (!output.differs(outputFile, result)) {
+				LOG.debug("{} doesn't differ, won't write.", outputFile);
+				return false;
+			}
+			
+			output.addGeneratedFile(outputFile, result);
+			
+			if (!outputdirFile.exists()) {
+				boolean mkdirs = outputdirFile.mkdirs();
+				if (mkdirs == false) {
+					LOG.error("couldn't create directory '{}'", outputdirFile);
+				}
+			}
+			FileWriter fw = new FileWriter(outputFile);
+			fw.append(result);
+			fw.flush();
+			fw.close();
+			return true;
 		}
 		catch (IOException e) {
 			LOG.error("couldn't write!", e);
+			return false;
 		}
 	}
 	
