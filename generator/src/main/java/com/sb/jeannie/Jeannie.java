@@ -2,6 +2,7 @@ package com.sb.jeannie;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -225,14 +226,14 @@ public class Jeannie {
 		}
 		boolean u = false;
 		for (int i = 0; i < propertyfiles.length; i++) {
-			u = u || ChangeChecker.newerThan(propertyfiles[i], outputlocation, ignore);
+			u = u || ChangeChecker.newerThan(propertyfiles[i], output.getStatus());
 		}
-		u = u || ChangeChecker.newerThan(inputlocation, outputlocation, ignore);
-		u = u || ChangeChecker.newerThan(modulelocation, outputlocation, ignore);
+		u = u || ChangeChecker.newerThan(inputlocation, output.getStatus());
+		u = u || ChangeChecker.newerThan(modulelocation, output.getStatus());
 		if (!u) {
 			long am = ChangeChecker.getAge(modulelocation);
 			long ai = ChangeChecker.getAge(inputlocation);
-			long ao = ChangeChecker.getAge(outputlocation);
+			long ao = ChangeChecker.getAge(output.getStatus());
 			
 			LOG.info("no files changed, generation skipped! ({}=={})", 
 					JeannieProperties.GLOBAL_SKIP_UPTODATE_CHECK, skip);
@@ -252,18 +253,7 @@ public class Jeannie {
 				return;
 			}
 			
-			if (output.getStatus().exists()) {
-				Gson gson = new Gson();
-				FileReader fr = new FileReader(output.getStatus());
-				try {
-					Map<String, String> digests = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
-					output.setDigests(digests);
-				}
-				catch (Exception e) {
-					LOG.error("couldn't read digest.");
-				}
-			}
-
+			readDigest();
 			parseAll();
 
 			processorHandler = new ProcessorHandler(module, output, scanner);
@@ -381,6 +371,20 @@ public class Jeannie {
 		}
 	}
 
+	private void readDigest() throws FileNotFoundException {
+		if (output.getStatus().exists()) {
+			Gson gson = new Gson();
+			FileReader fr = new FileReader(output.getStatus());
+			try {
+				Map<String, String> digests = gson.fromJson(fr, new TypeToken<Map<String, String>>() {}.getType());
+				output.setDigests(digests);
+			}
+			catch (Exception e) {
+				LOG.error("couldn't read digest.");
+			}
+		}
+	}
+
 	private List<STGroup> createGroups() {
 		List<STGroup> groups = new ArrayList<STGroup>();
 		List<File> templfiles = Utils.allfiles(module.getTemplates(), STG_SUFFIX);
@@ -450,6 +454,8 @@ public class Jeannie {
 	private void rebuildContext() {
 		Map<String, String> env = System.getenv();
 		Properties sysprops = System.getProperties();
+		Info info = new Info(inputlocation, outputlocation);
+		info.setVersion(Utils.version());
 		Context.init();
 		Context.put(Context.ALL, allInputObjects.values());
 		Context.put(Context.ALL_FILES, allfiles);
@@ -458,7 +464,7 @@ public class Jeannie {
 		Context.put(Context.CURRENT_FILE, null);
 		Context.put(Context.CURRENT_TEMPLATE, null);
 		Context.put(Context.ENV, env);
-		Context.put(Context.INFO, new Info(inputlocation, outputlocation));
+		Context.put(Context.INFO, info);
 		Context.put(Context.OBJECTMAP, allInputObjects);
 		Context.put(Context.PARSERS, scanner.getParsers());
 		Context.put(Context.PROPERTIES, properties);

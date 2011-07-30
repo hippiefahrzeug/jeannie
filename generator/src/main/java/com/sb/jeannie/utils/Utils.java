@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,5 +258,25 @@ public class Utils {
 	        formatter.format("%02x", b);
 	    }
 	    return formatter.toString();
+	}
+	
+	public static String version() {
+		Class<Utils> clazz = Utils.class;
+		String className = clazz.getSimpleName() + ".class";
+		String classPath = clazz.getResource(className).toString();
+		if (!classPath.startsWith("jar")) {
+		  return "";
+		}
+		String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + 
+		    "/META-INF/MANIFEST.MF";
+		Manifest manifest;
+		try {
+			manifest = new Manifest(new URL(manifestPath).openStream());
+		}
+		catch (Exception e) {
+			  return "";
+		}
+		Attributes attr = manifest.getMainAttributes();
+		return attr.get("Implementation-Version").toString();
 	}
 }

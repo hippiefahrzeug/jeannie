@@ -109,6 +109,9 @@ public class ChangeChecker {
 	}
 
 	public static Long getAge(File f) {
+		if (!ages.containsKey(f)) {
+			return 0L;
+		}
         long now = System.currentTimeMillis();
 		long lm = ages.get(f);
 		return now-lm;

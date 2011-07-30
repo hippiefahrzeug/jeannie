@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sb.jeannie.beans.JeannieProperties;
+import com.sb.jeannie.utils.Utils;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -65,6 +66,7 @@ public class LogConfiguration {
 		    }
 		    cfgstr = clazz.getResourceAsStream(File.separatorChar + profile);
 		    lc.reset();
+		    lc.putProperty("version", Utils.version());
 		    configurator.doConfigure(cfgstr);
 		}
 		catch (JoranException e) {

@@ -9,7 +9,7 @@ package $context.properties.package$;
 /**
  * note: $context.info.warn$
  * generator: v$context.info.version$
- * generated at: 
+ * generated at: $context.info.time$
  * template: $context.currenttemplate$
  */
 public class $context.Slurp.classname$ {
