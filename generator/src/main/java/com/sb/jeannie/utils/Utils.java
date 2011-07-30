@@ -27,34 +27,28 @@ import com.sb.jeannie.beans.JeannieProperties;
 
 public class Utils {
     private final static Logger LOG = LoggerFactory.getLogger(Utils.class);
-    public static Charset ENCODING;
     public static String NL = System.getProperty("line.separator");
-    public static String DEFAULTCHARSET = JeannieProperties.getGlobalEncoding();
-    
+    public static String DEFAULTCHARSET = "ISO-8859-1";
+
     public static final String PROPERTY_ENCODING = "encoding";
 
-    static {
-        setEncoding();
-    }
-    
-    public static void setEncoding() {
-    	String charset = System.getProperty(PROPERTY_ENCODING);
+    public static Charset getEncoding() {
+        Charset encoding = null;
+		String charset = JeannieProperties.getGlobalEncoding();
     	try {
-    		if (charset == null) {
-    			charset = DEFAULTCHARSET;
-    		}
     		LOG.debug("setting encoding to: " + charset);
-    		ENCODING = Charset.forName(charset);
+			encoding = Charset.forName(charset);
     	}
     	catch (Exception e) {
     		LOG.error("exception caught", e);
     	}
     	finally {
-    		if (ENCODING == null) {
+    		if (encoding == null) {
     			LOG.error("charset '" + charset + "' not supported, setting to: '" + DEFAULTCHARSET + "'");
-    			ENCODING = Charset.forName(DEFAULTCHARSET);
+    			encoding = Charset.forName(DEFAULTCHARSET);
     		}
     	}
+    	return encoding;
     }
 
 	public static List<File> allfiles(File path) {
@@ -141,7 +135,7 @@ public class Utils {
 				return null;
 			}
 			InputStream is = new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(is, ENCODING);
+			InputStreamReader isr = new InputStreamReader(is, getEncoding());
 			br = new BufferedReader(isr);
 			String s = null;
 			List<String> lines = new ArrayList<String>();
