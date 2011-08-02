@@ -36,7 +36,6 @@ com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
 //genie.generate();
 genie.looper();
 
-
 String b = "/home/alvi/projects/jeannie/";
 java.util.List<String> l = new java.util.ArrayList<String>();
 com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
