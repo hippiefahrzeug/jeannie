@@ -49,3 +49,8 @@ currently working on
 - giving final polish for first release
 - cmdline tools
 
+future plans
+------------
+
+* evaluate BSF
+
