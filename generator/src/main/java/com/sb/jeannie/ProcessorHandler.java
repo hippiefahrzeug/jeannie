@@ -77,7 +77,7 @@ public class ProcessorHandler {
 	 * 
 	 * This method has the usual groovy overhead when a module is
 	 * run for the first time. after that, if there are no scriptlet
-	 * changes, it should be fairly fast,.
+	 * changes, it should be fairly fast.
 	 */
 	private void compileScriptlets(KeyValuePrettyPrinter pp) {
 		try {

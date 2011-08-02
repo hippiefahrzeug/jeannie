@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
 import com.sb.jeannie.annotations.Parser;
+import com.sb.jeannie.beans.JeannieProperties;
 import com.sb.jeannie.beans.Module;
 import com.sb.jeannie.beans.Output;
 import com.sb.jeannie.interfaces.Postprocessor;
@@ -27,6 +28,19 @@ import com.sb.jeannie.parsers.ParserSupport;
 import com.sb.jeannie.processors.DefaultProcessor;
 
 /**
+ * scan classpath for processors and parsers. scanning is rather slow,
+ * therefore the code looks up a saved reflections-scanfile. this
+ * file can also be used to limit the parsers to those that we need.
+ * 
+ * the reflections-scanfile is saved on module-level. see 'Module' to
+ * find out where we try to find it.
+ * 
+ * If there is no scanfile, we write one to 'Output'. this file can
+ * then be copied into the module.
+ * 
+ * The user may provide a package which is scanned for parsers and
+ * processors.
+ * 
  * @author alvi
  */
 public class ClassScanner {
@@ -36,8 +50,6 @@ public class ClassScanner {
 	private static final String PARSERS_PKG = ParserSupport.class.getPackage().getName() + ".*";
 	private static final String PROCESSORS_PKG = DefaultProcessor.class.getPackage().getName() + ".*";
 	
-    private static final String EXTERNAL_PACKAGE = "external_package";
-    
     private Module module;
     private Output output;
 	private List<ParserSupport> parsers = new ArrayList<ParserSupport>();
@@ -91,8 +103,9 @@ public class ClassScanner {
     	}
     	
 		Predicate<String> filters = null;
-		if (System.getProperty(EXTERNAL_PACKAGE) != null) {
-			String userFilter = System.getProperty(EXTERNAL_PACKAGE);
+		String ext = JeannieProperties.getGlobalExternalPackage();
+		if (ext != null) {
+			String userFilter = System.getProperty(ext);
 			filters = new FilterBuilder().include(userFilter).include(PARSERS_PKG).include(PROCESSORS_PKG);
 		}
 		else {

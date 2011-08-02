@@ -20,6 +20,7 @@ public class JeannieProperties extends BeanSupport {
     public static final String GLOBAL_TYPES = "globalTypes";
     public static final String GLOBAL_DELIMITER_START_CHAR = "globalDelimiterStartChar";
     public static final String GLOBAL_DELIMITER_END_CHAR = "globalDelimiterEndChar";
+    public static final String GLOBAL_EXTERNAL_PACKAGE = "globalExternalPackage";
     public static final String CSV_SEPARATOR = "csvSeparator";
     public static final String CSV_SKIP_LINES = "csvSkipLines";
     public static final String CSV_QUOTE_CHARACTER = "csvQuoteCharacter";
@@ -37,6 +38,7 @@ public class JeannieProperties extends BeanSupport {
         PROPERTY_MAP.put(GLOBAL_TYPES, "only parse these types of files (comma separated)");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_START_CHAR, "start delimiter character for stringtemplate expressions");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_END_CHAR, "end delimiter character for stringtemplate expressions");
+        PROPERTY_MAP.put(GLOBAL_EXTERNAL_PACKAGE, "user package that will be scanned to find parsers and processors");
         PROPERTY_MAP.put(CSV_SEPARATOR, "csv parser: character to use for separation");
         PROPERTY_MAP.put(CSV_SKIP_LINES, "csv parser: how many lines to skip");
         PROPERTY_MAP.put(CSV_QUOTE_CHARACTER, "csv parser: character used to quote");
@@ -55,6 +57,7 @@ public class JeannieProperties extends BeanSupport {
         props.put(GLOBAL_TYPES, "all");
         props.put(GLOBAL_DELIMITER_START_CHAR, "$");
         props.put(GLOBAL_DELIMITER_END_CHAR, "$");
+        props.put(GLOBAL_EXTERNAL_PACKAGE, null);
         props.put(CSV_SEPARATOR, ",");
         props.put(CSV_SKIP_LINES, "0");
         props.put(CSV_QUOTE_CHARACTER, "\"");
@@ -113,6 +116,10 @@ public class JeannieProperties extends BeanSupport {
 
     public static String getGlobalDelimiterEndChar() {
         return props.get(GLOBAL_DELIMITER_END_CHAR);
+    }
+
+    public static String getGlobalExternalPackage() {
+        return props.get(GLOBAL_EXTERNAL_PACKAGE);
     }
 
     public static String getCsvSeparator() {
