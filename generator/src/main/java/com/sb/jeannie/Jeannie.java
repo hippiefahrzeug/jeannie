@@ -246,6 +246,7 @@ public class Jeannie {
 	
 	public void generate() {
 		Stopwatch tt = new Stopwatch();
+		showBanner();
 		int generatedFiles = 0;
 		int generatedChars = 0;
 		try {
@@ -496,6 +497,14 @@ public class Jeannie {
 		}
 		for (ParserSupport parser : parsers) {
 			parser.parseFiles(allInputObjects, fileTypes, dl);
+		}
+	}
+	
+	private void showBanner() {
+		File bf = module.getBanner();
+		List<String> banner = Utils.loadFile(bf);
+		for (String line : banner) {
+			LOG.info("{}", line);
 		}
 	}
 }

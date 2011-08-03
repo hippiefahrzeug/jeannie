@@ -39,7 +39,7 @@ import com.sb.jeannie.processors.DefaultProcessor;
  * then be copied into the module.
  * 
  * The user may provide a package which is scanned for parsers and
- * processors.
+ * processors see 'globalExternalPackage'.
  * 
  * @author alvi
  */

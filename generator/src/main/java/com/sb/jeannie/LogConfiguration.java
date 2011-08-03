@@ -16,6 +16,8 @@ import ch.qos.logback.core.joran.spi.JoranException;
 public class LogConfiguration {
 	final static Logger LOG = LoggerFactory.getLogger(LogConfiguration.class);
 	
+	private static final String VERSION = "version";
+
 	private static final String PRODUCTION_CFG = "logback.xml";
 	private static final String VERBOSE_CFG = "logback-verbose.xml";
 	private static final String DEBUG_CFG = "logback-debug.xml";
@@ -66,7 +68,7 @@ public class LogConfiguration {
 		    }
 		    cfgstr = clazz.getResourceAsStream(File.separatorChar + profile);
 		    lc.reset();
-		    lc.putProperty("version", Utils.version());
+		    lc.putProperty(VERSION, Utils.version());
 		    configurator.doConfigure(cfgstr);
 		}
 		catch (JoranException e) {
