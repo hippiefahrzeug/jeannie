@@ -115,10 +115,17 @@ public class ProcessorHandler {
 					cu.configure(cc);
 					cu.setClassLoader(gcl);
 					cu.compile();
+					
+					/* need to revise this later on. a groovy script
+					 * may consist of several classes very easily
+					 * (e.g. closures). we hope here that the first one
+					 * is the important one. may even have to iterate
+					 * through them and check for interfaces
 					if (cu.getClasses().size() != 1) {
 						LOG.error("a scriptlet must only have one class!");
 						LOG.error("will use first class only.");
 					}
+					*/
 					String scriptletClassName = cu.getFirstClassNode().getName();
 					LOG.debug("    ---> {}", scriptletClassName);
 					classMap.put(file.getName(), scriptletClassName);
