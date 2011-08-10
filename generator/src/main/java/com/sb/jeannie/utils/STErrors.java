@@ -1,4 +1,4 @@
-package com.sb.jeannie;
+package com.sb.jeannie.utils;
 
 import java.util.ArrayList;
 import java.util.List;

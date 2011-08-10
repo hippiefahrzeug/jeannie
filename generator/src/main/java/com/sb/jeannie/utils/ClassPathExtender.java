@@ -1,4 +1,4 @@
-package com.sb.jeannie;
+package com.sb.jeannie.utils;
 
 import java.lang.reflect.Method;
 import java.net.URL;

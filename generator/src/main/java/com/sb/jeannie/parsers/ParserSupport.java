@@ -11,9 +11,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sb.jeannie.KeyValuePrettyPrinter;
 import com.sb.jeannie.annotations.Parser;
 import com.sb.jeannie.beans.JeannieProperties;
+import com.sb.jeannie.utils.KeyValuePrettyPrinter;
 import com.sb.jeannie.utils.Stopwatch;
 import com.sb.jeannie.utils.Utils;
 

@@ -30,7 +30,7 @@ Whenever you're looking for a general purpose generator, you will find huge fram
 
 Because of this reason, you probably ended up creating your own ad-hoc generators in the past. They get the job done, but the problem is that such generators are often not reusable (or hard to reuse), not maintainable and only understandable by one person: you.
 
-jeannie addresses these problems and helps reusing your generators, or even share them. It has a very simple concept: Everything that defines how something is generated is contained within a module. A module is a well defined collection of files (either in a jar or on the file system):
+jeannie addresses these problems and helps reusing your generators and share them. It has a very simple concept: Everything that defines how something is generated is contained within a module. A module is a well defined collection of files (either in a jar or on the file system):
 
     module/                    - can be named anything
         scriptlets/            - contains your groovy scripts (optional)

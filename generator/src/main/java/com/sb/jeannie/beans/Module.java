@@ -1,6 +1,9 @@
 package com.sb.jeannie.beans;
 
 import java.io.File;
+import java.util.List;
+
+import com.sb.jeannie.utils.Utils;
 
 /**
  * encapsulates the structure of a cartridge.
@@ -33,6 +36,33 @@ public class Module {
 		reflections = new File(module, REFLECTIONS);
 	}
 
+	public boolean isModule() {
+		if (!isDir(module)) {
+			return false;
+		}
+		if (!isDir(templates)) {
+			return false;
+		}
+		List<File> templs = Utils.allfiles(templates, ".stg");
+		if (templs.size() == 0) {
+			return false;
+		}
+		for (File file : templs) {
+			if (!isFile(file)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean isFile(File file) {
+		 return file.canRead() && file.isFile();
+	}
+	
+	private boolean isDir(File file) {
+		 return file.canRead() && file.isDirectory();
+	}
+	
 	public File getModule() {
 		return module;
 	}

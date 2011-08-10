@@ -277,6 +277,10 @@ public class Utils {
 			  return "";
 		}
 		Attributes attr = manifest.getMainAttributes();
-		return attr.get("Implementation-Version").toString();
+		if (attr == null) {
+			return "";
+		}
+		Object v = attr.get("Implementation-Version");
+		return "" + v;
 	}
 }

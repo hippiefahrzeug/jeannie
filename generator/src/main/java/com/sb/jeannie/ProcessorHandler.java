@@ -27,6 +27,8 @@ import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.interfaces.ProcessorBase;
 import com.sb.jeannie.processors.DefaultPostprocessor;
 import com.sb.jeannie.utils.ChangeChecker;
+import com.sb.jeannie.utils.ClassPathExtender;
+import com.sb.jeannie.utils.KeyValuePrettyPrinter;
 import com.sb.jeannie.utils.Utils;
 
 public class ProcessorHandler {
@@ -104,7 +106,8 @@ public class ProcessorHandler {
 				
 				ClassLoader parent = Jeannie.class.getClassLoader();
 				GroovyClassLoader gcl = new GroovyClassLoader(parent);
-								
+				
+				LOG.debug("looking for scriptlets in: {}", module.getScriptlets());
 				List<File> scriptlets = Utils.allfiles(module.getScriptlets(), GROOVY_SUFFIX);
 				classMap = new HashMap<String, String>();
 				for (File file : scriptlets) {

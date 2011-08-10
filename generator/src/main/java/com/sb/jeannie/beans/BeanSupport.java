@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
-import com.sb.jeannie.KeyValuePrettyPrinter;
+import com.sb.jeannie.utils.KeyValuePrettyPrinter;
 import com.sb.jeannie.utils.Utils;
 
 public abstract class BeanSupport {

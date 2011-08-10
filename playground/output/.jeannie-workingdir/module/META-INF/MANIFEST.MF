@@ -1,0 +1,9 @@
+Implementation-Vendor: softbork
+Manifest-Version: 1.0
+Build-By: alvi
+Created-By: Buildr
+Build-Jdk: 
+Implementation-Version: 0.1.4-SNAPSHOT
+Implementation-Title: The jeannie generator
+Copyright: softbork
+

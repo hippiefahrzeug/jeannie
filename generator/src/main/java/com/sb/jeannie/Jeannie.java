@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,18 +35,21 @@ import com.sb.jeannie.interfaces.Preprocessor;
 import com.sb.jeannie.parsers.ParserSupport;
 import com.sb.jeannie.renderers.StringRenderer;
 import com.sb.jeannie.utils.ChangeChecker;
+import com.sb.jeannie.utils.InvertibleMap;
+import com.sb.jeannie.utils.KeyValuePrettyPrinter;
+import com.sb.jeannie.utils.STErrors;
 import com.sb.jeannie.utils.Stopwatch;
 import com.sb.jeannie.utils.Utils;
 
 /**
- * entry class for generation. Look no further.
+ * main class for generation. Look no further.
  * 
  * - init() can be called to reset the generator.
  * - generate() can be called repeatedly
  * - looper() remains in a loop of calling generate()
  *   whenever any files have changed (both input or
  *   module files.)
- * 
+ *   
  * @author alvi
  */
 public class Jeannie {
@@ -59,7 +61,7 @@ public class Jeannie {
 	private File modulelocation;
 	private File outputlocation;
 	private File inputlocation;
-	private File [] propertyfiles;
+	private List<File> propertyfiles;
 	
 	private List<File> allfiles;
 	private List<File> allPropertyfiles;
@@ -71,45 +73,19 @@ public class Jeannie {
 	private ClassScanner scanner;
 	private ProcessorHandler processorHandler;
 	private Set<String> ignore;
-	
+
 	public Jeannie(
-			String modulelocation, 
-			String inputlocation,
-			String outputlocation,
-			String... propertyfiles
-	) {
-		File [] pf = new File[propertyfiles.length];
-		for (int i = 0; i < propertyfiles.length; i++) {
-			pf[i] = new File(propertyfiles[i]);
-		}
-		init(new File(modulelocation), new File(inputlocation), new File(outputlocation), pf);
-	}
-	
-	// this one is for jpage
-	public Jeannie(
-			String modulelocation, 
-			String inputlocation,
-			String outputlocation,
-			List<String> propertyfiles
-	) {
-		File [] pfiles = new File[propertyfiles.size()];
-		int i = 0;
-		for (String pf : propertyfiles) {
-			pfiles[i] = new File(pf);
-			i++;
-		}
-		init(new File(modulelocation), new File(inputlocation), new File(outputlocation), pfiles);
-	}
-	
-	public Jeannie(
-			File modulelocation, 
-			File inputlocation,
+			File modulelocation,
 			File outputlocation,
-			File... propertyfiles
-	) {
+			File inputlocation,
+			List<File> propertyfiles) {
+		this.modulelocation = modulelocation;
+		this.outputlocation = outputlocation;
+		this.inputlocation = inputlocation;
+		this.propertyfiles = propertyfiles;
 		init(modulelocation, inputlocation, outputlocation, propertyfiles);
 	}
-	
+
 	public void init() {
 		init(modulelocation, inputlocation, outputlocation, propertyfiles);
 	}
@@ -118,7 +94,7 @@ public class Jeannie {
 			File modulelocation, 
 			File inputlocation,
 			File outputlocation,
-			File... propertyfiles
+			List<File> propertyfiles
 	) {
 		Stopwatch tt = new Stopwatch();
 		try {
@@ -128,14 +104,11 @@ public class Jeannie {
 			this.propertyfiles = propertyfiles;
 			
 			this.output = new Output(outputlocation);
-			if (modulelocation.getName().endsWith(".jar")) {
-				Utils.extract(modulelocation, output.getModule());
-				this.modulelocation = output.getModule();
-			}
 			
 			List<File> props = Utils.allfiles(this.modulelocation, ".properties");
 			Collections.sort(props);
-			props.addAll(Arrays.asList(propertyfiles));
+			
+			props.addAll(propertyfiles);
 			this.allPropertyfiles = props;
 			
 			properties = readProperties(allPropertyfiles);
@@ -162,8 +135,9 @@ public class Jeannie {
 	public void looper() {
 		ChangeChecker inputfiles = new ChangeChecker(inputlocation, ignore);
 		ChangeChecker modulefiles = new ChangeChecker(modulelocation, ignore);
-		for (int i = 0; i < propertyfiles.length; i++) {
-			modulefiles.add(propertyfiles[i]);
+		
+		for (File file : allPropertyfiles) {
+			modulefiles.add(file);
 		}
 		
 		inputfiles.hasChangedFiles(); // don't parse first time
@@ -225,8 +199,8 @@ public class Jeannie {
 			return false;
 		}
 		boolean u = false;
-		for (int i = 0; i < propertyfiles.length; i++) {
-			u = u || ChangeChecker.newerThan(propertyfiles[i], output.getStatus());
+		for (File pf : allPropertyfiles) {
+			u = u || ChangeChecker.newerThan(pf, output.getStatus());
 		}
 		u = u || ChangeChecker.newerThan(inputlocation, output.getStatus());
 		u = u || ChangeChecker.newerThan(modulelocation, output.getStatus());
@@ -243,10 +217,14 @@ public class Jeannie {
 		}
 		return !u;
 	}
-	
+		
 	public void generate() {
 		Stopwatch tt = new Stopwatch();
+		Module module = new Module(this.modulelocation);
 		showBanner();
+		
+		this.scanner = new ClassScanner(module, output);
+		
 		int generatedFiles = 0;
 		int generatedChars = 0;
 		try {
@@ -502,9 +480,11 @@ public class Jeannie {
 	
 	private void showBanner() {
 		File bf = module.getBanner();
-		List<String> banner = Utils.loadFile(bf);
-		for (String line : banner) {
-			LOG.info("{}", line);
+		if ( bf.canRead() && bf.isFile()) {
+			List<String> banner = Utils.loadFile(bf);
+			for (String line : banner) {
+				LOG.info("{}", line);
+			}
 		}
 	}
 }
