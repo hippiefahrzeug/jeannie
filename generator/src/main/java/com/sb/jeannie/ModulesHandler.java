@@ -3,6 +3,9 @@ package com.sb.jeannie;
 import java.io.File;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sb.jeannie.beans.Module;
 import com.sb.jeannie.beans.Output;
 import com.sb.jeannie.utils.Utils;
@@ -20,6 +23,8 @@ import com.sb.jeannie.utils.Utils;
  *
  */
 public class ModulesHandler {
+	private static final Logger LOG = LoggerFactory.getLogger(ModulesHandler.class);
+
 	private File moduleslocation;
 	private File outputlocation;
 	private File inputlocation;
@@ -32,8 +37,8 @@ public class ModulesHandler {
 			List<File> propertyfiles,
 			Output output) {
 		this.moduleslocation = moduleslocation;
-		this.outputlocation = outputlocation;
 		this.inputlocation = inputlocation;
+		this.outputlocation = outputlocation;
 		this.propertyfiles = propertyfiles;
 		
 		if (moduleslocation.getName().endsWith(".jar")) {
@@ -45,19 +50,40 @@ public class ModulesHandler {
 	public void generateAll() {
 		Module m = new Module(moduleslocation);
 		if (m.isModule()) {
-			Jeannie jeannie = new Jeannie(moduleslocation, inputlocation, outputlocation, propertyfiles);
+			LOG.info("{} points to a plain module", moduleslocation);
+			Generator jeannie = new Generator(moduleslocation, inputlocation, outputlocation, propertyfiles);
 			jeannie.generate();
 			return;
 		}
 		File[] files = moduleslocation.listFiles();
+		if (files == null) {
+			return;
+		}
 		for (int i = 0; i < files.length; i++) {
 			if (files[i].isDirectory()) {
 				m = new Module(files[i]);
 				if (m.isModule()) {
-					Jeannie jeannie = new Jeannie(files[i], inputlocation, outputlocation, propertyfiles);
+					LOG.info("processing module {}", files[i].getName());
+					Generator jeannie = new Generator(files[i], inputlocation, outputlocation, propertyfiles);
 					jeannie.generate();
 				}
 			}
 		}
+	}
+
+	public File getModuleslocation() {
+		return moduleslocation;
+	}
+
+	public File getOutputlocation() {
+		return outputlocation;
+	}
+
+	public File getInputlocation() {
+		return inputlocation;
+	}
+
+	public List<File> getPropertyfiles() {
+		return propertyfiles;
 	}
 }

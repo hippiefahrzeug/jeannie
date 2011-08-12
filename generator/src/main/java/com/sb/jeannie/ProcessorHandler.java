@@ -104,7 +104,7 @@ public class ProcessorHandler {
 				cc.setTargetDirectory(target);
 				cc.setVerbose(true);
 				
-				ClassLoader parent = Jeannie.class.getClassLoader();
+				ClassLoader parent = Generator.class.getClassLoader();
 				GroovyClassLoader gcl = new GroovyClassLoader(parent);
 				
 				LOG.debug("looking for scriptlets in: {}", module.getScriptlets());
@@ -146,7 +146,7 @@ public class ProcessorHandler {
 				fw.close();
 			}
 			
-			URLClassLoader parent = (URLClassLoader)Jeannie.class.getClassLoader();
+			URLClassLoader parent = (URLClassLoader)Generator.class.getClassLoader();
 			URLClassLoader rl = new URLClassLoader(new URL[] {}, parent);
 
 			ClassPathExtender.addURL(

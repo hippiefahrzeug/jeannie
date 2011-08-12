@@ -3,11 +3,11 @@
 com.sb.jeannie.ParserScanner ps = new com.sb.jeannie.ParserScanner();
 ps.scan();
 
-com.sb.jeannie.Jeannie.geng();
+com.sb.jeannie.Generator.geng();
 
 
 
-com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
+com.sb.jeannie.Generator genie = new com.sb.jeannie.Generator(
 "/home/alvi/projects/jeannie/generator/../modules/testbed",
 "/home/alvi/projects/jeannie/generator/../test",
 "/home/alvi/projects/jeannie/generator/../generator/target/test/testbed"
@@ -27,7 +27,7 @@ com.sb.jeannie.HammaYaml.testes2();
 
 String b = "/home/alvi/projects/jeannie/";
 java.util.List<String> l = new java.util.ArrayList<String>();
-com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
+com.sb.jeannie.Generator genie = new com.sb.jeannie.Generator(
 		b + "modules/propertyslurper", 
 		b + "test/input", 
 		"/tmp/propertyslurper",
@@ -38,13 +38,26 @@ genie.looper();
 
 String b = "/home/alvi/projects/jeannie/";
 java.util.List<String> l = new java.util.ArrayList<String>();
-com.sb.jeannie.Jeannie genie = new com.sb.jeannie.Jeannie(
+com.sb.jeannie.Generator genie = new com.sb.jeannie.Generator(
 		b + "modules/testbed",
 		b + "test/input",
 		"/tmp/testbed",
 		l
 );
 genie.looper();
+
+
+String b = "/home/alvi/projects/jeannie/";
+java.util.List<java.io.File> l = new java.util.ArrayList<java.io.File>();
+com.sb.jeannie.beans.Output o = new com.sb.jeannie.beans.Output(new java.io.File("/tmp/trara"));
+com.sb.jeannie.ModulesHandler mh = new com.sb.jeannie.ModulesHandler(
+		new java.io.File(b + "modules/testbed"),
+		new java.io.File(b + "test/input"),
+		new java.io.File("/tmp/testbed2"),
+		l,
+		o
+);
+mh.generateAll();
 
 System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage().getName());
 

@@ -179,6 +179,7 @@ public class Utils {
     }
     
 	public static boolean extract(File path, File dest) {
+		LOG.debug("extracting {} to {}", path, dest);
 		dest.mkdirs();
 		int n = 0;
 		try {

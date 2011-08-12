@@ -53,7 +53,7 @@ public class JeannieProperties extends BeanSupport {
         props.put(GLOBAL_ENCODING, "ISO-8859-1");
         props.put(GLOBAL_SKIP_UPTODATE_CHECK, "false");
         props.put(GLOBAL_VERBOSE, "false");
-        props.put(GLOBAL_DEBUG, "false");
+        props.put(GLOBAL_DEBUG, "true");
         props.put(GLOBAL_TYPES, "all");
         props.put(GLOBAL_DELIMITER_START_CHAR, "$");
         props.put(GLOBAL_DELIMITER_END_CHAR, "$");

@@ -1,8 +1,10 @@
 package com.sb.jeannie.generator.test;
 
+import java.io.File;
+
 import org.junit.Test;
 
-import com.sb.jeannie.Jeannie;
+import com.sb.jeannie.ModulesHandler;
 
 public class JeannieTest {
 	
@@ -18,15 +20,17 @@ public class JeannieTest {
 	@Test
 	public void testGenerator() {
 		for (int i = 0; i < testcases.length ;i++) {
-			String modulelocation = testcases[i][0];
-			String inputlocation = testcases[i][1];
-			String outputlocation = testcases[i][2];
-			Jeannie jeannie = new Jeannie(
+			File modulelocation = new File(testcases[i][0]);
+			File inputlocation = new File(testcases[i][1]);
+			File outputlocation = new File(testcases[i][2]);
+			
+			ModulesHandler handler = new ModulesHandler(
 					modulelocation, 
 					inputlocation,
-					outputlocation
-			);
-			jeannie.generate();
+					outputlocation,
+					null,
+					null);
+			handler.generateAll();
 		}
 	}
 }

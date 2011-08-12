@@ -11,9 +11,20 @@ public class Main {
 	private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 	
 	public static void main(String[] args) {
+		ModulesHandler handler = createHandler(args);
+		if (handler != null) {
+			handler.generateAll();
+		}
+	}
+	
+	private static void usage() {
+		LOG.error("usage: [-looper] <moduledir> <inputdir> <outputdir> [propertyfile_1]...[propertyfile_n]");
+	}
+	
+	protected static ModulesHandler createHandler(String[] args) {
 		if (args.length < 3) {
 			usage();
-			return;
+			return null;
 		}
 		
 		int idx = 0;
@@ -23,7 +34,7 @@ public class Main {
 			idx = 1;
 			if (args.length < 3) {
 				usage();
-				return;
+				return null;
 			}
 		}
 		
@@ -36,16 +47,7 @@ public class Main {
 			props.add(new File(args[i]));
 		}
 		
-		/*
-		Jeannie jeannie = new Jeannie(module, input, output, props);
-		jeannie.generate();
-		*/
-		
 		ModulesHandler handler = new ModulesHandler(module, input, output, props, null);
-		handler.generateAll();
-	}
-	
-	private static void usage() {
-		LOG.error("usage: [-looper] <moduledir> <inputdir> <outputdir>");
+		return handler;
 	}
 }

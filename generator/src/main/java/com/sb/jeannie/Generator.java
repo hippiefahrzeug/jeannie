@@ -46,14 +46,10 @@ import com.sb.jeannie.utils.Utils;
  * 
  * - init() can be called to reset the generator.
  * - generate() can be called repeatedly
- * - looper() remains in a loop of calling generate()
- *   whenever any files have changed (both input or
- *   module files.)
- *   
  * @author alvi
  */
-public class Jeannie {
-	private static final Logger LOG = LoggerFactory.getLogger(Jeannie.class);
+public class Generator {
+	private static final Logger LOG = LoggerFactory.getLogger(Generator.class);
 	
 	private static final String STG_SUFFIX = "stg";
 	private static final String CONTEXT = "context";
@@ -74,14 +70,14 @@ public class Jeannie {
 	private ProcessorHandler processorHandler;
 	private Set<String> ignore;
 
-	public Jeannie(
+	public Generator(
 			File modulelocation,
-			File outputlocation,
 			File inputlocation,
+			File outputlocation,
 			List<File> propertyfiles) {
 		this.modulelocation = modulelocation;
-		this.outputlocation = outputlocation;
 		this.inputlocation = inputlocation;
+		this.outputlocation = outputlocation;
 		this.propertyfiles = propertyfiles;
 		init(modulelocation, inputlocation, outputlocation, propertyfiles);
 	}
@@ -325,7 +321,7 @@ public class Jeannie {
 				}
 				// rebuild the context for next file
 				// uncommented: probably not necessary
-				// (it may be as there may be some polution...)
+				// (it may be as there may be some pollution...)
 				// rebuildContext();
 			}
 			
@@ -336,7 +332,6 @@ public class Jeannie {
 			fw.append(json);
 			fw.flush();
 			fw.close();
-
 		}
 		catch (IOException e) {
 			LOG.error("couldn't write!", e);
@@ -344,7 +339,7 @@ public class Jeannie {
 		finally {
 			double kbs = generatedChars/1024.0;
 			double t = kbs/(tt.getElapsedTimeMillis()/1000.0);
-			String msg = String.format("generated %s files, %.2f kb, %.2f kb/sec, %s", 
+			String msg = String.format("generated files: %s, %.2f kb, %.2f kb/sec, %s", 
 					generatedFiles, kbs, t, tt);
 			LOG.info("{}", msg);
 		}
