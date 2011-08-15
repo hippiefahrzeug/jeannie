@@ -82,5 +82,5 @@ public String get$first(rest(line)); format="uc"$() {
 >>
 
 filldefault(line) ::= <<
-props.put($first(line)$, "$last(line)$");
+props.put($first(line)$, $last(line)$);
 >>
