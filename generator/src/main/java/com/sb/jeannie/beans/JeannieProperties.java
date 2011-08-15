@@ -74,7 +74,7 @@ public class JeannieProperties extends BeanSupport {
 		return PROPERTY_MAP;
 	}
 
-	public Map<String, String> getProps() {
+	protected Map<String, String> getProps() {
 		return props;
 	}
 

@@ -19,7 +19,7 @@ public abstract class BeanSupport {
 	}
 	
 	abstract protected Map<String, String> getPropertyMap();
-	abstract public Map<String, String> getProps();
+	abstract protected Map<String, String> getProps();
 	
     public static void log(Logger LOG, Map<String, String> propertyMap, Map<String, String> props) {
 		List<String> lines = indexList(propertyMap, props);

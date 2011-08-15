@@ -6,9 +6,11 @@ properties ::= [
 main() ::= <<
 package $context.properties.package$;
 
+$context.currentfile$
+
 /**
  * note: $context.info.warn$
- * generator: v$context.info.version$
+ * generator: $context.info.version$
  * generated at: $context.info.time$
  * template: $context.currenttemplate$
  */
@@ -23,14 +25,41 @@ public class $context.Slurp.classname$ {
 
         $context.Slurp.model:staticmap(); separator="\n"$
 
-        // set the defaults here
-        $context.Slurp.defaults:filldefault(); separator="\n"$
+        init();
     }
 
-    public $context.Slurp.classname$(STGroup stg, Map<String, Object> properties) {
+    public static void init() {
         props = new HashMap<String, String>();
-        handleTemplates(stg);
-        handleProperties(properties);
+
+        // set the defaults here
+        $context.Slurp.defaults:filldefault(); separator="\n"$
+
+        Properties sysproperties = System.getProperties();
+        handleProperties(PROPERTY_MAP, sysproperties, props);
+    }
+
+    public static void handleProperties(Properties properties) {
+        handleProperties(PROPERTY_MAP, properties, props);
+    }
+    
+    protected Map<String, String> getPropertyMap() {
+        return PROPERTY_MAP;
+    }
+
+    protected Map<String, String> getProps() {
+        return props;
+    }
+
+    public static Map<String, String> getProperties() {
+        return props;
+    }
+
+    public static void log() {
+        log(LOG, PROPERTY_MAP, props);
+    }
+    
+    public static String getIndex() {
+        return props.get(INDEX);
     }
 
     $context.Slurp.model:getter(); separator="\n"$

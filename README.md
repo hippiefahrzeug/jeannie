@@ -3,7 +3,7 @@ jeannie - a general purpose generator for the rest of us
 
 * Author:    alvi
 * Date:      June, 2011
-* Version:   0.1 - not released yet
+* Version:   0.1.6
 * Website:   <http://softbork.com/jeannie>
 * GitHub:    <https://github.com/hippiefahrzeug/jeannie>
 
