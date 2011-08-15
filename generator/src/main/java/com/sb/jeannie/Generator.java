@@ -104,7 +104,9 @@ public class Generator {
 			List<File> props = Utils.allfiles(this.modulelocation, ".properties");
 			Collections.sort(props);
 			
-			props.addAll(propertyfiles);
+			if (propertyfiles != null) {
+				props.addAll(propertyfiles);
+			}
 			this.allPropertyfiles = props;
 			
 			properties = readProperties(allPropertyfiles);

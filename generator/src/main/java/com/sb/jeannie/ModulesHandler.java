@@ -50,7 +50,7 @@ public class ModulesHandler {
 	public void generateAll() {
 		Module m = new Module(moduleslocation);
 		if (m.isModule()) {
-			LOG.info("{} points to a plain module", moduleslocation);
+			LOG.debug("{} points to a plain module", moduleslocation);
 			Generator jeannie = new Generator(moduleslocation, inputlocation, outputlocation, propertyfiles);
 			jeannie.generate();
 			return;
@@ -63,7 +63,7 @@ public class ModulesHandler {
 			if (files[i].isDirectory()) {
 				m = new Module(files[i]);
 				if (m.isModule()) {
-					LOG.info("processing module {}", files[i].getName());
+					LOG.debug("processing module {}", files[i].getName());
 					Generator jeannie = new Generator(files[i], inputlocation, outputlocation, propertyfiles);
 					jeannie.generate();
 				}
