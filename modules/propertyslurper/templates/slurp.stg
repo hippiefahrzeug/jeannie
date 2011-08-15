@@ -6,6 +6,13 @@ properties ::= [
 main() ::= <<
 package $context.properties.package$;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * note: $context.info.warn$
  * generator: $context.info.version$
@@ -13,6 +20,7 @@ package $context.properties.package$;
  * template: $context.currenttemplate$
  */
 public class $context.Slurp.classname$ extends BeanSupport {
+private static final Logger LOG = LoggerFactory.getLogger($context.Slurp.classname$.class);
     $context.Slurp.model:declarations(); separator="\n"$
 
     private static Map<String, String> PROPERTY_MAP;
@@ -73,7 +81,7 @@ PROPERTY_MAP.put($first(line)$, "$last(line)$");
 >>
 
 getter(line) ::= <<
-public String get$first(rest(line)); format="uc"$() {
+public static String get$first(rest(line)); format="uc"$() {
     return props.get($first(line)$);
 }
 
