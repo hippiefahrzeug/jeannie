@@ -125,56 +125,6 @@ public class Generator {
 		}
 	}
 	
-	/**
-	 * never stops and calls generator whenever it detects a change.
-	 */
-	public void looper() {
-		ChangeChecker inputfiles = new ChangeChecker(inputlocation, ignore);
-		ChangeChecker modulefiles = new ChangeChecker(modulelocation, ignore);
-		
-		for (File file : allPropertyfiles) {
-			modulefiles.add(file);
-		}
-		
-		inputfiles.hasChangedFiles(); // don't parse first time
-		int n = 0;
-		int numInputfiles = Utils.allfiles(inputlocation).size();
-		int numModulefiles = Utils.allfiles(modulelocation).size();
-		do {
-			try {
-				if (n % 4 == 0) { // expensive. don't do this all the time...
-					int num = Utils.allfiles(inputlocation).size();
-					if (numInputfiles != num) {
-						numInputfiles = num;
-						inputfiles = new ChangeChecker(inputlocation, ignore);
-					}
-					num = Utils.allfiles(modulelocation).size();
-					if (numModulefiles != num) {
-						numModulefiles = num;
-						modulefiles = new ChangeChecker(modulelocation, ignore);
-					}
-				}
-				
-				if (inputfiles.hasChangedFiles() ||
-					modulefiles.hasChangedFiles()
-				) {
-					List<ParserSupport> parsers = scanner.getParsers();
-					for (ParserSupport parser : parsers) {
-						parser.init();
-					}
-					init();
-					generate();
-				}
-
-				Thread.sleep(500);
-			}
-			catch (Exception e) {
-				LOG.error("exception caught", e);
-			}
-			n++;
-		} while(true);
-	}
-
 	private Properties readProperties(List<File> propertyfiles) {
 		Properties p = new Properties();
 		for (File prop : propertyfiles) {

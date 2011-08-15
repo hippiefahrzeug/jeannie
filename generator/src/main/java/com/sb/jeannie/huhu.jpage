@@ -59,6 +59,13 @@ com.sb.jeannie.ModulesHandler mh = new com.sb.jeannie.ModulesHandler(
 );
 mh.generateAll();
 
+
+
+String b = "/home/alvi/projects/jeannie/";
+String [] args = {"-looper", b + "modules/testbed", b + "test/input", "/tmp/testbed3"};
+com.sb.jeannie.Main.main(args);
+
+
 System.out.println(com.sb.jeannie.processors.DefaultProcessor.class.getPackage().getName());
 
 
