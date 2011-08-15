@@ -1,6 +1,6 @@
 # Version number for this release
-VERSION_NUMBER = "0.1.4"
-THIS_VERSION = "0.1.4"
+VERSION_NUMBER = "0.1.5-SNAPSHOT"
+THIS_VERSION = "0.1.5-SNAPSHOT"
 #Release.next_version = "0.1.0-SNAPSHOT"
 
 GROUP = "jeannie"
