@@ -1,12 +1,10 @@
 properties ::= [
     "type" : "csv",
-    "dpostprocessor" : "JavaPostprocessor"
+    "postprocessor" : "JavaPostprocessor"
 ]
 
 main() ::= <<
 package $context.properties.package$;
-
-$context.currentfile$
 
 /**
  * note: $context.info.warn$
@@ -14,7 +12,7 @@ $context.currentfile$
  * generated at: $context.info.time$
  * template: $context.currenttemplate$
  */
-public class $context.Slurp.classname$ {
+public class $context.Slurp.classname$ extends BeanSupport {
     $context.Slurp.model:declarations(); separator="\n"$
 
     private static Map<String, String> PROPERTY_MAP;
