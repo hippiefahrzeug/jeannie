@@ -1,6 +1,15 @@
 #!/bin/sh
 
-JEANNIE_HOME=/home/alvi/projects/jeannie/playground
+JEANNIE_VERSION=0.1.5
+
+if [ ! -e "/tmp/j/${JEANNIE_VERSION}" ]
+then
+mkdir -p /tmp/j/${JEANNIE_VERSION}
+tar xf /home/alvi/releases/jeannie/com/softbork/jeannie/${JEANNIE_VERSION}/jeannie-${JEANNIE_VERSION}.tgz \
+--directory /tmp/j/${JEANNIE_VERSION} --keep-old-files
+fi
+
+JEANNIE_HOME=/tmp/j/${JEANNIE_VERSION}
 LIB_DIR=${JEANNIE_HOME}/lib
 MODULE_DIR=`dirname $0`/cartridge
 
@@ -27,13 +36,11 @@ ${LIB_DIR}/snakeyaml-1.8.jar:\
 ${LIB_DIR}/ST4-4.0.4.jar:\
 ${LIB_DIR}/stringtemplate-3.2.1.jar:\
 ${LIB_DIR}/xml-apis-1.0.b2.jar:\
-${LIB_DIR}/jeannie-generator-0.1.4-SNAPSHOT.jar
+${LIB_DIR}/jeannie-generator-${JEANNIE_VERSION}.jar
 
-if [ -z "$1" -o -z "$2" ] ; then
-echo usage "jeannie.sh <inputdir> <outputdir>"
-cat ${MODULE_DIR}/README;
+if [ -z "$2" -o -z "$3" ] ; then
+echo usage "jeannie.sh <moduledir> <inputdir> <outputdir>"
 exit 1
 fi
 
 java -DglobalDebug=true -Xmx128M -cp ${LIBS} com.sb.jeannie.Main $1 $2 $3
-

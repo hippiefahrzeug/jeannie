@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * template: $context.currenttemplate$
  */
 public class $context.Slurp.classname$ extends BeanSupport {
-private static final Logger LOG = LoggerFactory.getLogger($context.Slurp.classname$.class);
+    private static final Logger LOG = LoggerFactory.getLogger($context.Slurp.classname$.class);
     $context.Slurp.model:declarations(); separator="\n"$
 
     private static Map<String, String> PROPERTY_MAP;

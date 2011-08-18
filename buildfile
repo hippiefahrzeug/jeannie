@@ -57,11 +57,26 @@ define 'jeannie' do
   manifest["Implementation-Version"] = THIS_VERSION
 
   define 'generator' do
-    compile.with ALL_COMMON_MODULES
+    resources.filter.using 'version'=> THIS_VERSION
+    sources = FileList[_("target/generated-sources")]
+#      Java.classpath << ALL_COMMON_MODULES
+#      Java.classpath << 'target/classes'
+#      Java.com.sb.jeannie.Main.main(['../../modules/propertyslurper', 'src/main/jeannie target/generated-sources', 'src/main/jeannie/jeannie.properties'])
     #package(:jar).merge(ALL_COMMON_MODULES)
+    compile.with ALL_COMMON_MODULES
     package :jar
     package :sources
   end
+
+  task :generate do
+    system "time generator/jeannie.sh modules/propertyslurper extras/src/main/jeannie extras/target/generated-sources extras/src/main/jeannie/jeannie.properties"
+  end
+
+#  define 'extras' => [:generate] do
+#    p 'huhu'
+#    compile.with ALL_COMMON_MODULES
+#    compile.from 
+#  end
 
   define 'modules' do
       package(:jar, :id=>'propertyslurper').include _('propertyslurper')

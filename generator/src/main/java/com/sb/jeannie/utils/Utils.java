@@ -17,11 +17,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,6 +261,21 @@ public class Utils {
 	}
 	
 	public static String version() {
+		URL resource = Utils.class.getClassLoader().getResource("buildtime.properties");
+		Properties p = new Properties();
+		String version;
+		try {
+			p.load(resource.openStream());
+			version = p.getProperty("version");
+		}
+		catch (IOException e) {
+			version = "???";
+		}
+		return version;
+	}
+	
+	/* kinda doesn't work
+	public static String version() {
 		Class<Utils> clazz = Utils.class;
 		String className = clazz.getSimpleName() + ".class";
 		String classPath = clazz.getResource(className).toString();
@@ -284,4 +298,5 @@ public class Utils {
 		Object v = attr.get("Implementation-Version");
 		return "" + v;
 	}
+	*/
 }
