@@ -46,6 +46,7 @@ import com.sb.jeannie.utils.Utils;
  * 
  * - init() can be called to reset the generator.
  * - generate() can be called repeatedly
+ * 
  * @author alvi
  */
 public class Generator {

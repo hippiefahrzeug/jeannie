@@ -269,7 +269,7 @@ public class Utils {
 			version = p.getProperty("version");
 		}
 		catch (IOException e) {
-			version = "???";
+			version = "?";
 		}
 		return version;
 	}
