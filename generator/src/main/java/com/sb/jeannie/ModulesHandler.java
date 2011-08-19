@@ -41,6 +41,8 @@ public class ModulesHandler {
 		this.outputlocation = outputlocation;
 		this.propertyfiles = propertyfiles;
 		
+		LogConfiguration.configure();
+		
 		if (moduleslocation.getName().endsWith(".jar")) {
 			Utils.extract(moduleslocation, output.getModule());
 			moduleslocation = output.getModule();

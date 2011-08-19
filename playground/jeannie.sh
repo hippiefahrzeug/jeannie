@@ -1,6 +1,6 @@
 #!/bin/sh
 
-JEANNIE_VERSION=0.1.6
+JEANNIE_VERSION=0.1.7
 
 if [ ! -e "/tmp/j/${JEANNIE_VERSION}" ]
 then
