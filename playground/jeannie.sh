@@ -1,9 +1,10 @@
 #!/bin/sh
 
-JEANNIE_VERSION=0.1.5
+JEANNIE_VERSION=0.1.6
 
 if [ ! -e "/tmp/j/${JEANNIE_VERSION}" ]
 then
+echo "extracting archive... (first time use)"
 mkdir -p /tmp/j/${JEANNIE_VERSION}
 tar xf /home/alvi/releases/jeannie/com/softbork/jeannie/${JEANNIE_VERSION}/jeannie-${JEANNIE_VERSION}.tgz \
 --directory /tmp/j/${JEANNIE_VERSION} --keep-old-files

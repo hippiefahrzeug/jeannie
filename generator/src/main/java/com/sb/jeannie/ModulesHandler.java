@@ -48,11 +48,13 @@ public class ModulesHandler {
 	}
 	
 	public void generateAll() {
+		boolean gen = false;
 		Module m = new Module(moduleslocation);
 		if (m.isModule()) {
 			LOG.debug("{} points to a plain module", moduleslocation);
 			Generator jeannie = new Generator(moduleslocation, inputlocation, outputlocation, propertyfiles);
 			jeannie.generate();
+			gen = true;
 			return;
 		}
 		File[] files = moduleslocation.listFiles();
@@ -66,8 +68,13 @@ public class ModulesHandler {
 					LOG.debug("processing module {}", files[i].getName());
 					Generator jeannie = new Generator(files[i], inputlocation, outputlocation, propertyfiles);
 					jeannie.generate();
+					gen = true;
 				}
 			}
+		}
+		
+		if (gen == false) {
+			LOG.info("no module found in '{}'", moduleslocation);
 		}
 	}
 
