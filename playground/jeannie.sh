@@ -39,8 +39,8 @@ ${LIB_DIR}/xml-apis-1.0.b2.jar:\
 ${LIB_DIR}/jeannie-generator-${JEANNIE_VERSION}.jar
 
 if [ -z "$2" -o -z "$3" ] ; then
-echo usage "jeannie.sh <moduledir> <inputdir> <outputdir>"
+echo usage "jeannie.sh [-looper] <moduledir> <inputdir> <outputdir>"
 exit 1
 fi
 
-java -DglobalDebug=true -Xmx128M -cp ${LIBS} com.sb.jeannie.Main $1 $2 $3
+java -DglobalDebug=true -Xmx128M -cp ${LIBS} com.sb.jeannie.Main $1 $2 $3 $4
