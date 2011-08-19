@@ -1,6 +1,6 @@
 # Version number for this release
-VERSION_NUMBER = "0.1.7-SNAPSHOT"
-THIS_VERSION = "0.1.7-SNAPSHOT"
+VERSION_NUMBER = "0.1.7"
+THIS_VERSION = "0.1.7"
 #Release.next_version = "0.1.0-SNAPSHOT"
 
 GROUP = "com.softbork"
