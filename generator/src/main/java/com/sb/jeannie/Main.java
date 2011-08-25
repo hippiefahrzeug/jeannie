@@ -22,6 +22,8 @@ public class Main {
 			return;
 		}
 		
+		LogConfiguration.configure();
+		
 		ModulesHandler handler = createHandler(args);
 		
 		if (handler != null) {

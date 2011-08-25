@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * note: $context.info.warn$
- * generator: $context.info.version$
+ * generator: $context.info.generator$
  * generated at: $context.info.time$
  * template: $context.currenttemplate$
  */

@@ -265,7 +265,9 @@ public class Utils {
 		Properties p = new Properties();
 		String version;
 		try {
-			p.load(resource.openStream());
+			if (resource != null) {
+				p.load(resource.openStream());
+			}
 			version = p.getProperty("version");
 		}
 		catch (IOException e) {

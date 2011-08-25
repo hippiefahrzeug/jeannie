@@ -27,7 +27,6 @@ public class DefaultPreprocessor extends DefaultProcessor implements Preprocesso
 	 */
 	public List<Object> generatefor() {
 		ArrayList<Object> result = new ArrayList<Object>();
-		// result.add(getContext().getCurrent());
 		return result;
 	}
 }

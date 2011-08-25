@@ -58,10 +58,6 @@ define 'jeannie' do
 
   define 'generator' do
     resources.filter.using 'version'=> THIS_VERSION
-    sources = FileList[_("target/generated-sources")]
-#      Java.classpath << ALL_COMMON_MODULES
-#      Java.classpath << 'target/classes'
-#      Java.com.sb.jeannie.Main.main(['../../modules/propertyslurper', 'src/main/jeannie target/generated-sources', 'src/main/jeannie/jeannie.properties'])
     #package(:jar).merge(ALL_COMMON_MODULES)
     compile.with ALL_COMMON_MODULES
     package :jar
@@ -72,19 +68,57 @@ define 'jeannie' do
     system "time generator/jeannie.sh modules/propertyslurper extras/src/main/jeannie extras/target/generated-sources extras/src/main/jeannie/jeannie.properties"
   end
 
-#  define 'extras' => [:generate] do
-#    p 'huhu'
-#    compile.with ALL_COMMON_MODULES
-#    compile.from 
-#  end
+  define 'extras' => [:generate] do
+#    sources = FileList[_("extras/src/main/jeannie/*.*")]
+#    generate = file(_("extras/target/generated-sources") => sources).to_s do |dir|
+#      puts 'generating...'
+#      mkdir_p dir.to_s # ensure directory is created
+#    end
+#    sources = FileList[_("target/generated-sources")]
+    build do
+      p 'generating...'
+      Java::Commands.java(
+      :classpath => ['../generator/target/resources', projects('generator'), ALL_COMMON_MODULES],
+#      :classpath => ['generator/target/resources', 'generator/target/classes', ALL_COMMON_MODULES],
+#      :classpath => ['generator/target/classes', ALL_COMMON_MODULES],
+      :java_args => [
+        'com.sb.jeannie.Main',
+        'modules/propertyslurper',
+        'extras/src/main/jeannie', 
+        'extras/target/generated-sources',
+        'extras/src/main/jeannie/jeannie.properties'
+        ]
+      )
+    end
+
+    sources = FileList[_("extras/src/main/jeannie/*.csv")]
+    generated = path_to('extras/target/generated-sources/src')
+    xjc = file(generated => sources) do |dir|
+        mkdir_p generated
+    end
+
+#    sources = FileList[_("extras/target/generated-sources")]
+#    sources = 'extras/target/generated-sources'
+#    compile.with [ALL_COMMON_MODULES, projects('generator')]
+    compile.from generated
+#    package :jar
+  end
 
   define 'modules' do
       package(:jar, :id=>'propertyslurper').include _('propertyslurper')
       package(:jar, :id=>'testbed').include _('testbed')
   end
 
+  define 'playground' do
+    build do
+      filter('playground/src/main/shell').into('target').
+        using('version'=>version, 'created'=>Time.now).run
+    end
+  end
+
   package(:zip).include(projects('generator'), ALL_COMMON_MODULES, :path=>'lib').
                 include(projects('modules'), :path=>'modules')
   package(:tgz).include(projects('generator'), ALL_COMMON_MODULES, :path=>'lib').
                 include(projects('modules'), :path=>'modules')
+
 end

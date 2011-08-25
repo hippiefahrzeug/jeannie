@@ -158,7 +158,7 @@ public class Generator {
 			long ai = ChangeChecker.getAge(inputlocation);
 			long ao = ChangeChecker.getAge(output.getStatus());
 			
-			LOG.info("no files changed, generation skipped! ({}=={})", 
+			LOG.info("no files changed, generation skipped! ({} is '{}')", 
 					JeannieProperties.GLOBAL_SKIP_UPTODATE_CHECK, skip);
 			LOG.info("module: {} (modified {} ago)", modulelocation, Utils.ms2time(am));
 			LOG.info("input:  {} (modified {} ago)", inputlocation, Utils.ms2time(ai));
