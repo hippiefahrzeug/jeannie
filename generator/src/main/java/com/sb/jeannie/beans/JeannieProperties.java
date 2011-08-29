@@ -8,11 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author alvi
+ * note: this file has been generated. do not edit.
+ * generator: jeannie-0.1.8-SNAPSHOT
+ * generated at: Mon Aug 29 15:08:27 CEST 2011
+ * template: slurp
  */
 public class JeannieProperties extends BeanSupport {
-	private static final Logger LOG = LoggerFactory.getLogger(JeannieProperties.class);
-	
+    private static final Logger LOG = LoggerFactory.getLogger(JeannieProperties.class);
     public static final String GLOBAL_ENCODING = "globalEncoding";
     public static final String GLOBAL_SKIP_UPTODATE_CHECK = "globalSkipUptodateCheck";
     public static final String GLOBAL_VERBOSE = "globalVerbose";
@@ -24,9 +26,10 @@ public class JeannieProperties extends BeanSupport {
     public static final String CSV_SEPARATOR = "csvSeparator";
     public static final String CSV_SKIP_LINES = "csvSkipLines";
     public static final String CSV_QUOTE_CHARACTER = "csvQuoteCharacter";
+    public static final String JSON_CLASSNAME = "jsonClassname";
 
-    protected static Map<String, String> PROPERTY_MAP;
-	protected static Map<String, String> props;
+    private static Map<String, String> PROPERTY_MAP;
+    private static Map<String, String> props;
 
     static {
         PROPERTY_MAP = new HashMap<String, String>();
@@ -34,22 +37,23 @@ public class JeannieProperties extends BeanSupport {
         PROPERTY_MAP.put(GLOBAL_ENCODING, "set encoding type for read and written files");
         PROPERTY_MAP.put(GLOBAL_SKIP_UPTODATE_CHECK, "skip up-to-date check");
         PROPERTY_MAP.put(GLOBAL_VERBOSE, "print out the index whenever the generator runs");
-        PROPERTY_MAP.put(GLOBAL_DEBUG, "DEBUG mode - causes lots of output");
+        PROPERTY_MAP.put(GLOBAL_DEBUG, "debug mode - causes lots of output");
         PROPERTY_MAP.put(GLOBAL_TYPES, "only parse these types of files (comma separated)");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_START_CHAR, "start delimiter character for stringtemplate expressions");
         PROPERTY_MAP.put(GLOBAL_DELIMITER_END_CHAR, "end delimiter character for stringtemplate expressions");
-        PROPERTY_MAP.put(GLOBAL_EXTERNAL_PACKAGE, "user package that will be scanned to find parsers and processors");
+        PROPERTY_MAP.put(GLOBAL_EXTERNAL_PACKAGE, "user package that will be scanned to find parsers and processors;");
         PROPERTY_MAP.put(CSV_SEPARATOR, "csv parser: character to use for separation");
         PROPERTY_MAP.put(CSV_SKIP_LINES, "csv parser: how many lines to skip");
         PROPERTY_MAP.put(CSV_QUOTE_CHARACTER, "csv parser: character used to quote");
+        PROPERTY_MAP.put(JSON_CLASSNAME, "json parser: will return objects of this type");
 
         init();
     }
-    
+
     public static void init() {
-        // set the defaults here
         props = new HashMap<String, String>();
-        
+
+        // set the defaults here
         props.put(GLOBAL_ENCODING, "ISO-8859-1");
         props.put(GLOBAL_SKIP_UPTODATE_CHECK, "false");
         props.put(GLOBAL_VERBOSE, "false");
@@ -61,35 +65,36 @@ public class JeannieProperties extends BeanSupport {
         props.put(CSV_SEPARATOR, ",");
         props.put(CSV_SKIP_LINES, "0");
         props.put(CSV_QUOTE_CHARACTER, "\"");
-        
+        props.put(JSON_CLASSNAME, "java.util.List");
+
         Properties sysproperties = System.getProperties();
         handleProperties(PROPERTY_MAP, sysproperties, props);
     }
-    
+
     public static void handleProperties(Properties properties) {
         handleProperties(PROPERTY_MAP, properties, props);
     }
-    
-	protected Map<String, String> getPropertyMap() {
-		return PROPERTY_MAP;
-	}
 
-	protected Map<String, String> getProps() {
-		return props;
-	}
-
-    public static Map<String, String> getProperties() {
-    	return props;
+    protected Map<String, String> getPropertyMap() {
+        return PROPERTY_MAP;
     }
 
-	public static void log() {
-		log(LOG, PROPERTY_MAP, props);
-	}
-	
+    protected Map<String, String> getProps() {
+        return props;
+    }
+
+    public static Map<String, String> getProperties() {
+        return props;
+    }
+
+    public static void log() {
+        log(LOG, PROPERTY_MAP, props);
+    }
+
     public static String getIndex() {
         return props.get(INDEX);
     }
-    
+
     public static String getGlobalEncoding() {
         return props.get(GLOBAL_ENCODING);
     }
@@ -133,4 +138,9 @@ public class JeannieProperties extends BeanSupport {
     public static String getCsvQuoteCharacter() {
         return props.get(CSV_QUOTE_CHARACTER);
     }
+
+    public static String getJsonClassname() {
+        return props.get(JSON_CLASSNAME);
+    }
+
 }

@@ -120,3 +120,16 @@ define 'jeannie' do
 end
 
 task :pslooper => 'jeannie:extras:looper'
+
+task :looper do
+  Java::Commands.java(
+    :classpath => ['generator/target/resources', 'generator/target/classes', ALL_COMMON_MODULES],
+    :java_args => [
+      'com.sb.jeannie.Main',
+      '-looper',
+      'modules/testbed',
+      'test/input',
+      'target/test'
+      ]
+    )
+end
