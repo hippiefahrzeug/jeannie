@@ -295,6 +295,7 @@ public class Generator {
 			String msg = String.format("generated files: %s, %.2f kb, %.2f kb/sec, %s", 
 					generatedFiles, kbs, t, tt);
 			LOG.info("{}", msg);
+			LOG.info("in '{}'", outputlocation);
 		}
 	}
 

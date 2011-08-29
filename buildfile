@@ -64,23 +64,15 @@ define 'jeannie' do
     package :sources
   end
 
-  task :generate do
-    system "time generator/jeannie.sh modules/propertyslurper extras/src/main/jeannie extras/target/generated-sources extras/src/main/jeannie/jeannie.properties"
-  end
-
-  define 'extras' => [:generate] do
-#    sources = FileList[_("extras/src/main/jeannie/*.*")]
-#    generate = file(_("extras/target/generated-sources") => sources).to_s do |dir|
-#      puts 'generating...'
-#      mkdir_p dir.to_s # ensure directory is created
-#    end
-#    sources = FileList[_("target/generated-sources")]
-    build do
+  define "extras" do
+    # whatever you use to generate your sources
+    sources = FileList[_("src/main/jeannie/*.csv")]
+  
+    generate = file(_("target/generated-sources") => sources) do |dir|
+    mkdir_p dir.to_s # ensure directory is created
       p 'generating...'
       Java::Commands.java(
       :classpath => ['../generator/target/resources', projects('generator'), ALL_COMMON_MODULES],
-#      :classpath => ['generator/target/resources', 'generator/target/classes', ALL_COMMON_MODULES],
-#      :classpath => ['generator/target/classes', ALL_COMMON_MODULES],
       :java_args => [
         'com.sb.jeannie.Main',
         'modules/propertyslurper',
@@ -91,17 +83,8 @@ define 'jeannie' do
       )
     end
 
-    sources = FileList[_("extras/src/main/jeannie/*.csv")]
-    generated = path_to('extras/target/generated-sources/src')
-    xjc = file(generated => sources) do |dir|
-        mkdir_p generated
-    end
-
-#    sources = FileList[_("extras/target/generated-sources")]
-#    sources = 'extras/target/generated-sources'
-#    compile.with [ALL_COMMON_MODULES, projects('generator')]
-    compile.from generated
-#    package :jar
+    compile.with ALL_COMMON_MODULES, projects('generator')
+    compile.from generate.to_s
   end
 
   define 'modules' do
