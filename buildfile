@@ -65,6 +65,20 @@ define 'jeannie' do
   end
 
   define "extras" do
+    task :looper do
+      Java::Commands.java(
+        :classpath => ['../generator/target/resources', projects('generator'), ALL_COMMON_MODULES],
+        :java_args => [
+          'com.sb.jeannie.Main',
+          '-looper',
+          'modules/propertyslurper',
+          'extras/src/main/jeannie', 
+          'extras/target/generated-sources',
+          'extras/src/main/jeannie/jeannie.properties'
+          ]
+        )
+    end
+
     # whatever you use to generate your sources
     sources = FileList[_("src/main/jeannie/*.csv")]
   
@@ -103,5 +117,6 @@ define 'jeannie' do
                 include(projects('modules'), :path=>'modules')
   package(:tgz).include(projects('generator'), ALL_COMMON_MODULES, :path=>'lib').
                 include(projects('modules'), :path=>'modules')
-
 end
+
+task :pslooper => 'jeannie:extras:looper'
