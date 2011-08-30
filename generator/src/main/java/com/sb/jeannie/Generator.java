@@ -257,6 +257,8 @@ public class Generator {
 					for (Object iterator : generatefor) {
 						Context.put(Context.ITERATOR, iterator);
 						Context.put(Context.COUNTER, Integer.valueOf(n));
+						// hide result from previous generation
+						Context.put(Context.RESULT, null);
 						String result = st.render();
 						generatedChars += result.length();
 						Context.put(Context.RESULT, result);
@@ -295,7 +297,8 @@ public class Generator {
 			String msg = String.format("generated files: %s, %.2f kb, %.2f kb/sec, %s", 
 					generatedFiles, kbs, t, tt);
 			LOG.info("{}", msg);
-			LOG.info("in '{}'", outputlocation);
+			LOG.info("from '{}'", inputlocation);
+			LOG.info("to '{}'", outputlocation);
 		}
 	}
 
@@ -355,7 +358,7 @@ public class Generator {
 			File outputdirFile = outputFile.getParentFile();
 
 			if (!output.differs(outputFile, result)) {
-				LOG.debug("{} doesn't differ, won't write.", outputFile);
+				LOG.info("{} doesn't differ, won't write.", outputFile);
 				return false;
 			}
 			

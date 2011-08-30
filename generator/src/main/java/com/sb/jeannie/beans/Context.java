@@ -48,6 +48,7 @@ public enum Context {
     private static Map<String, String> index;
     
     static {
+    	context = new HashMap<String, Object>();
     	index = new HashMap<String, String>();
     	index.put(INDEX, "this index");
     	index.put(ALL, "all parsed and non-parsed objects");
@@ -71,7 +72,7 @@ public enum Context {
     }
     
     public static void init() {
-    	Context.context = new HashMap<String, Object>();
+    	context.clear();
 	}
     
     public static void put(String key, Object value) {
@@ -159,6 +160,10 @@ public enum Context {
     
     private static String additionalInfo(Map<String, Object> context, String key) {
     	if (INDEX.equals(key)) {
+    		return "";
+    	}
+    	
+    	if (RESULT.equals(key)) {
     		return "";
     	}
     	

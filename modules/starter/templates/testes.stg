@@ -1,0 +1,17 @@
+properties ::= [
+	"postprocessor" : "Postprocessor",
+        "type" : "yaml"
+]
+
+db2java ::= [
+        "key1":"value1",
+        "key2":"value2"
+]
+
+main() ::= <<
+$context.index$
+
+$context.jeannieproperties.index$
+
+$context.templateproperties.index$
+>>

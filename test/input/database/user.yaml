@@ -1,0 +1,21 @@
+name: user
+description: all users are stored here
+columns:
+    id:
+        type: decimal
+        size: 9999
+        required: true
+        primaryKey: true
+        description: the primary key
+    login:
+        type: varchar
+        size: 20
+        description: the login name of the user
+    name:
+        type: varchar
+        size: 20
+        description: the name of the user
+    firstname:
+        type: varchar
+        size: 20
+        description: the firstname of the user

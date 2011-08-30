@@ -45,4 +45,4 @@ echo usage "jeannie.sh [-looper] <moduledir> <inputdir> <outputdir>"
 exit 1
 fi
 
-java -DglobalDebug=true -Xmx128M -cp ${LIBS} com.sb.jeannie.Main $1 $2 $3 $4
+java -Xmx128M -cp ${LIBS} com.sb.jeannie.Main $1 $2 $3 $4
